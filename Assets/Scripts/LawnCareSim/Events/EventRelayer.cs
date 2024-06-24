@@ -1,22 +1,22 @@
 ﻿using Core.Events;
-//using LawnCareSim.Camera;
+using LawnCareSim.Camera;
 //using LawnCareSim.Inventory;
 //using LawnCareSim.Animation;
 //using LawnCareSim.Time;
-//using LawnCareSim.UI;
+using LawnCareSim.UI;
 using System;
 using UnityEngine;
 //using AnimationState = LawnCareSim.Animation.AnimationState;
 using LawnCareSim.Player;
-//using LawnCareSim.Crafting;
 
 namespace LawnCareSim.Events
 {
     [CreateAssetMenu(fileName = "EventRelayer", menuName = "Events/EventRelayer")]
     public class EventRelayer : EventRelayerScriptableObject<EventRelayer>
     {
-        /*
+        
         #region Animation
+        /*
         public event EventHandler<AnimationState> AnimationStateStartedEvent;
         public event EventHandler<AnimationState> AnimationStateEndedEvent;
         public event EventHandler<(AnimationState, PlayerState)> AnimationStateChangedEvent;
@@ -35,8 +35,8 @@ namespace LawnCareSim.Events
         {
             AnimationStateChangedEvent?.Invoke(this, states);
         }
-        #endregion
         */
+        #endregion
 
         #region Camera
         public struct CameraBlendData
@@ -61,23 +61,15 @@ namespace LawnCareSim.Events
         }
         #endregion
 
-        /*
-        #region Crafting
-        public event EventHandler<CraftingStation> CraftingStationEnteredEvent;
-
-        public void OnCraftingStationEntered(CraftingStation name)
-        {
-            CraftingStationEnteredEvent?.Invoke(this, name);
-        }
-        #endregion
-
         #region Inventory
+        /*
         public event EventHandler<Item> ItemAddedEvent;
         
         public void OnItemAdded(Item added)
         {
             ItemAddedEvent?.Invoke(this, added);
         }
+        */
         #endregion
 
         #region Menus
@@ -100,7 +92,6 @@ namespace LawnCareSim.Events
             ToggleGameMenusActiveEvent?.Invoke(this, active);
         }
         #endregion
-        */
 
         #region Movement
         public event EventHandler<Transform> RequestMovePlayerEvent;
@@ -139,8 +130,9 @@ namespace LawnCareSim.Events
         }
         #endregion
 
-        /*
+        
         #region Time
+        /*
         public event EventHandler<Day> DayChangedEvent;
         public event EventHandler<int> TimeChangedEvent;
 
@@ -153,7 +145,7 @@ namespace LawnCareSim.Events
         {
             TimeChangedEvent?.Invoke(this, newTime);
         }
-        #endregion
         */
+        #endregion
     }
 }

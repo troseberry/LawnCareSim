@@ -1,10 +1,9 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using Cinemachine;
 using System.Collections;
 using LawnCareSim.Events;
 
-namespace LawnCareSim.Player
+namespace LawnCareSim.Camera
 {
     public enum CameraName
     {
@@ -14,11 +13,9 @@ namespace LawnCareSim.Player
 
     public class CameraController : MonoBehaviour
     {
-        
         #region Fields
         public static CameraController Instance;
 
-        private Camera _mainCamera; 
         private CinemachineBrain _cinemachineBrain;
         private float _defaultBlendTime;
 

@@ -12,6 +12,7 @@
     {
         Idling,
         Walking,
-        Running
+        Running,
+        Mowing
     }
 }
