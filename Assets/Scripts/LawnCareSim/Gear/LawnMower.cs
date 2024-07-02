@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LawnCareSim.Equipment
 {
-    public class LawnMower : MonoBehaviour, IEquipment
+    public class LawnMower : MonoBehaviour, IGear
     {
         private GrassManager _grassManager;
 

@@ -1,6 +1,6 @@
 ﻿namespace LawnCareSim.Equipment
 {
-    public interface IEquipment
+    public interface IGear
     {
     }
 }
