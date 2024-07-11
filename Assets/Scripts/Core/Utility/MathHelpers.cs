@@ -20,5 +20,10 @@ namespace Core.Utility
 
             return new Vector3(x, vector.y, z);
         }
+
+        public static bool IsWithinRange(float value, float compValue, float margin)
+        {
+            return (value <= compValue + margin) && (value >= compValue - margin);
+        }
     }
 }

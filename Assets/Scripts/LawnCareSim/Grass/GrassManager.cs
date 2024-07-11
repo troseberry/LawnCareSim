@@ -3,6 +3,14 @@ using UnityEngine;
 
 namespace LawnCareSim.Grass
 {
+    internal struct GrassObject
+    {
+        public GameObject GameObject;
+        public Vector2 Location;
+        public float Height;
+        public bool WasCut;
+    }
+
     public partial class GrassManager : MonoBehaviour
     {
         public static GrassManager Instance;
@@ -14,18 +22,30 @@ namespace LawnCareSim.Grass
 
         // on start of job, would take predefined grass area and generate grass objects
 
-        public void CutGrass(GameObject grassObject, float height)
+        public bool CutGrass(string grassName, float height)
         {
-            if (height < grassObject.transform.localScale.y)
+            if (!_grassObjects.TryGetValue(grassName, out var grassObj))
             {
-                grassObject.transform.localScale = new Vector3(1.0f, height, 1.0f);
+                // Log
+                return false;
             }
+
+            if (!grassObj.WasCut && height < grassObj.Height)
+            {
+                grassObj.GameObject.transform.localScale = new Vector3(1.0f, height, 1.0f);
+                grassObj.Height = height;
+                grassObj.WasCut = true;
+
+                return true;
+            }
+
+            return false;
         }
     }
 
     public partial class GrassManager
     {
-        private List<GameObject> _grassObjects = new List<GameObject>();
+        private Dictionary<string, GrassObject> _grassObjects = new Dictionary<string, GrassObject>();
 
         [SerializeField] private GameObject _grassPrefab;
         [SerializeField] private Transform _grassParent;
@@ -34,7 +54,6 @@ namespace LawnCareSim.Grass
 
         private void Start()
         {
-
             DebugCreateGrassInArea();
         }
 
@@ -47,13 +66,24 @@ namespace LawnCareSim.Grass
             int xRange = xMax - xMin;
             int yRange = yMax - yMin;
 
+            int grassCount = 0;
             for (int i = 0; i < xRange * 2; i++)
             {
                 for (int j = 0; j < yRange * 2; j++)
                 {
                     Vector3 spawn = new Vector3(xMin + (i * 0.5f), 0.5f, yMin + (j * 0.5f));
-                    _grassObjects.Add(Instantiate(_grassPrefab, spawn, Quaternion.identity, _grassParent));
+                    var grass = Instantiate(_grassPrefab, spawn, Quaternion.identity, _grassParent);
+                    grass.name = $"Grass_{grassCount}";
 
+                    _grassObjects.Add(grass.name, new GrassObject 
+                    { 
+                        GameObject = grass,
+                        Location = spawn,
+                        Height = grass.transform.localScale.y,
+                        WasCut = false
+                    });
+
+                    grassCount++;
                     j++;
                 }
 

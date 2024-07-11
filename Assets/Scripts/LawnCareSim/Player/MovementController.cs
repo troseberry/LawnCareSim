@@ -1,4 +1,5 @@
-﻿using LawnCareSim.Events;
+﻿using Core.Utility;
+using LawnCareSim.Events;
 using LawnCareSim.Input;
 using LawnCareSim.UI;
 using System.Collections;
@@ -11,8 +12,12 @@ namespace LawnCareSim.Player
         public static MovementController Instance;
 
         [SerializeField] private float _movementSpeed = 10f;
+        [SerializeField] private float _smoothTurnTime = 0.1f;
 
         private CharacterController _characterController;
+        private GameObject _playerMesh;
+        private Transform _leftTurn;
+        private Transform _rightTurn;
 
         private void Awake()
         {
@@ -23,6 +28,9 @@ namespace LawnCareSim.Player
         {
             _characterController = GetComponent<CharacterController>();
             InputController.Instance.MoveEvent += MoveEventListener;
+            _playerMesh = transform.Find("Capsule").gameObject;
+            _leftTurn = GameObject.Find("LeftTurnAxis").transform;
+            _rightTurn = GameObject.Find("RightTurnAxis").transform;
 
             //EventRelayer.Instance.RequestMovePlayerEvent += MovePlayerRequestEventListener;
             //EventRelayer.Instance.CameraChangeStartedEvent += CameraChangeStartedEventListener;
@@ -36,7 +44,8 @@ namespace LawnCareSim.Player
 
         private void Update()
         {
-            ProcessMovementInput();
+            //ProcessMovementInput();
+            ProcessMowerMovement();
         }
 
         #region Event Listeners
@@ -96,9 +105,11 @@ namespace LawnCareSim.Player
 
         private bool _canMove = true;
         private bool _isBeingMovedManually = false;
+        private bool _usingMower = true;
+        private bool _isOffsetRight;
+        private bool _isOffsetLeft;
 
         private Vector3 _moveDirection;
-        private const float _turnSmoothTime = 0.1f;
         private float _turnSmoothVelocity;
 
         private MovementSpeed _currentSpeed = MovementSpeed.Idling;
@@ -125,15 +136,15 @@ namespace LawnCareSim.Player
 
             Vector3 direction = new Vector3(_horizontalInput, 0f, _verticalInput).normalized;
 
+
             if (direction.magnitude >= 0.1f)
             {
-                float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;// + _cameraController.transform.eulerAngles.y;
+                float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
 
-                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, _turnSmoothTime);
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, _smoothTurnTime);
                 transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
                 _moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-
                 _characterController.Move(_moveDirection * _movementSpeed * UnityEngine.Time.deltaTime);
 
                 if (_currentSpeed != MovementSpeed.Walking)
@@ -149,6 +160,62 @@ namespace LawnCareSim.Player
                 {
                     CurrentSpeed = MovementSpeed.Idling;
                 }
+            }
+        }
+
+        private void ProcessMowerMovement()
+        {
+            if (!_canMove || _isBeingMovedManually)
+            {
+                return;
+            }
+
+            Vector3 direction = new Vector3(_horizontalInput, 0f, _verticalInput).normalized;
+
+            if (direction.magnitude >= 0.1f)
+            {
+                //OffsetMesh(direction.x);
+
+                float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+                if (targetAngle < 0)
+                {
+                    targetAngle += 360;
+                }
+
+                bool dontTurn = false;
+                // Currently turning
+                if (!MathHelpers.IsWithinRange(transform.rotation.eulerAngles.y, targetAngle, 1.0f))
+                {
+                    if (!(direction.x != 0 && direction.z != 0))
+                    {
+                        dontTurn = true;
+                        //Trying to turn without moving forward. Disallow
+                        Debug.Log($"No movement turn: {transform.rotation.eulerAngles.y} | {targetAngle}");
+                    }
+                    else
+                    {
+                        dontTurn = false;
+                    }
+                }
+
+                if (!dontTurn)
+                {
+                    _moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+                    _characterController.Move(_moveDirection * _movementSpeed * UnityEngine.Time.deltaTime);
+
+                    float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, _smoothTurnTime);
+                    transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+                }
+
+                //transform.RotateAround(direction.x < 0 ? _leftTurn.position : _rightTurn.position, Vector3.up, targetAngle * Time.deltaTime);
+
+
+
+            }
+            else
+            {
+                _characterController.Move(new Vector3(0, -9.8f * UnityEngine.Time.deltaTime, 0));
             }
         }
 
@@ -185,6 +252,50 @@ namespace LawnCareSim.Player
             yield return null;
         }
 
-        
+        public void ToggleMowerControls(bool enable)
+        {
+            if (enable)
+            {
+                _movementSpeed = 4.0f;
+                _smoothTurnTime = 0.3f;
+                _usingMower = true;
+            }
+            else
+            {
+               // ResetMesh();
+                _movementSpeed = 10.0f;
+                _smoothTurnTime = 0.1f;
+                _usingMower = false;
+            }
+        }
+
+        private void OffsetMesh(float horzInput)
+        {
+            if (!_usingMower)
+            {
+                return;
+            }
+
+            if (_isOffsetLeft && horzInput < 0)
+            {
+                return;
+            }
+
+            if (_isOffsetRight && horzInput > 0)
+            {
+                return;
+            }
+
+            _isOffsetLeft = horzInput < 0;
+            _isOffsetRight = horzInput > 0;
+
+            var startPos = _playerMesh.transform.localPosition;
+            _playerMesh.transform.localPosition = new Vector3(horzInput > 0 ? -0.5f : 0.5f, 0, 0);
+        }
+
+        private void ResetMesh()
+        {
+            _playerMesh.transform.localPosition = Vector3.zero;
+        }
     }
 }
