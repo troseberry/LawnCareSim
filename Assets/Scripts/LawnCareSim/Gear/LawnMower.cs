@@ -5,10 +5,16 @@ namespace LawnCareSim.Equipment
 {
     public partial class LawnMower : MonoBehaviour
     {
+        [SerializeField] private GameObject _grassClippingsPrefab;
+        [SerializeField] private GameObject _clippingsSpawn;
+
         private GrassManager _grassManager;
 
         private const string GRASS_TAG = "Grass";
         private float _cutHeight = 0.5f;
+
+        private Transform _groundCheckPoint;
+        private int _grassLayer;
 
         private void OnGUI()
         {
@@ -28,29 +34,20 @@ namespace LawnCareSim.Equipment
         {
             // Later, do this at the start of a job
             _grassManager = GrassManager.Instance;
+            _groundCheckPoint = transform.Find("GroundCheckPoint");
+            _grassLayer = LayerMask.NameToLayer("Grass");
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.tag == GRASS_TAG)
             {
-                //Destroy(other.gameObject);
-               if (_grassManager.CutGrass(other.gameObject.name, _cutHeight))
+                if (_grassManager.CutGrass(other.gameObject.name, _cutHeight))
                 {
                     Use();
                 }
-                //Cut(other.gameObject);
             }
 
-        }
-
-        private void Cut(GameObject grassObject)
-        {
-            if (_cutHeight < grassObject.transform.localScale.y)
-            {
-                grassObject.transform.localScale = new Vector3(1.0f, _cutHeight, 1.0f);
-                Use();
-            }
         }
     }
 
@@ -103,10 +100,32 @@ namespace LawnCareSim.Equipment
             Durability -= DECAY_RATE;
             Energy -= ENERGY_DRAIN_RATE;
 
+            if (ShouldSpawnClippings())
+            {
+                var clippings = Instantiate(_grassClippingsPrefab);
+                Vector3 adjustedSpawn = _clippingsSpawn.transform.position;
+                adjustedSpawn.y = clippings.transform.position.y;
+
+                clippings.transform.position = adjustedSpawn;
+            }
+
             if (_durability <= 0 || _energy <= 0)
             {
                 TurnOff();
             }
+        }
+
+        private bool ShouldSpawnClippings()
+        {
+            if (Physics.Raycast(_groundCheckPoint.transform.position, Vector3.down, out var hit, 1.0f))
+            {
+                if (hit.collider.tag == GRASS_TAG)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

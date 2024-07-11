@@ -49,8 +49,8 @@ namespace LawnCareSim.Player
         private void Update()
         {
             
-            ProcessMovementInput();
-            //ProcessMowerMovement();
+            //ProcessMovementInput();
+            ProcessMowerMovement();
         }
 
         #region Event Listeners
