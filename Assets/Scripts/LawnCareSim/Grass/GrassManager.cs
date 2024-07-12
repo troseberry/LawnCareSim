@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace LawnCareSim.Grass
 {
-
     internal struct GrassObject
     {
         public GameObject GameObject;
@@ -76,23 +75,12 @@ namespace LawnCareSim.Grass
                     var grass = Instantiate(_grassPrefab, spawn, Quaternion.identity, _grassParent);
                     grass.name = $"Grass_{grassCount}";
 
-                    /*
-                    BorderInfo borders = new BorderInfo
-                    {
-                        West = spawn.x == xMin,
-                        East = spawn.x == xMax,
-                        South = spawn.z == yMin,
-                        North = spawn.z == yMax,
-                    };
-                    */
-
                     _grassObjects.Add(grass.name, new GrassObject 
                     { 
                         GameObject = grass,
                         Location = spawn,
                         Height = grass.transform.localScale.y,
                         WasCut = false,
-                        //Borders = borders
                     });
 
                     grassCount++;

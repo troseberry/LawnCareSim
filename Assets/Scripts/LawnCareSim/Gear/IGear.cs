@@ -1,7 +1,9 @@
-﻿namespace LawnCareSim.Equipment
+﻿namespace LawnCareSim.Gear
 {
     public interface IGear
     {
+        GearType GearType { get; }
+
         /// <summary>
         /// Whether the gear is switched on or off
         /// </summary>

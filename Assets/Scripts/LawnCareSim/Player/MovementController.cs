@@ -1,22 +1,36 @@
 ﻿using Core.Utility;
 using LawnCareSim.Events;
+using LawnCareSim.Gear;
 using LawnCareSim.Input;
-using LawnCareSim.UI;
-using System.Collections;
+using System;
 using UnityEngine;
 
 namespace LawnCareSim.Player
 {
+    internal enum MovementMode
+    {
+        Default,
+        Mower,
+    }
+
     public partial class MovementController : MonoBehaviour
     {
         public static MovementController Instance;
 
-        [SerializeField] private float _movementSpeed = 10f;
-        [SerializeField] private float _rotationSpeed = 3.0f;
+        #region Variables
+        [SerializeField] private GameObject _leftTurnAxis;
+        [SerializeField] private GameObject _rightTurnAxis;
 
+        private float _horizontalInput;
+        private float _verticalInput;
+
+        private bool _canMove = true;
+        private bool _isBeingMovedManually = false;
+
+        private MovementMode _currentMode = MovementMode.Default;
+        private Vector3 _moveDirection;
         private Rigidbody _rigidbody;
-        private GameObject _leftTurnPivot;
-        private GameObject _rightTurnPivot;
+        #endregion
 
         private void Awake()
         {
@@ -26,12 +40,13 @@ namespace LawnCareSim.Player
         private void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            _leftTurnPivot = GameObject.Find("LeftTurnAxis");
-            _rightTurnPivot = GameObject.Find("RightTurnAxis");
 
             InputController.Instance.MoveEvent += MoveEventListener;
+            EventRelayer.Instance.GearSwitchedEvent += GearSwitchedEventListener;
         }
 
+        #region GUI
+        /*
         private void OnGUI()
         {
             var width = UnityEngine.Camera.main.pixelWidth;
@@ -45,85 +60,98 @@ namespace LawnCareSim.Player
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Horz {_horizontalInput} |Vert: {_verticalInput}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Velocity: {_rigidbody.velocity}", fontStyle);
         }
+        */
+        #endregion
 
         private void Update()
-        {
-            
-            //ProcessMovementInput();
-            ProcessMowerMovement();
-        }
-
-        #region Event Listeners
-        private void MoveEventListener(object sender, Vector2 e)
-        {
-            _horizontalInput = e.x;
-            _verticalInput = e.y;
-        }
-        #endregion
-    }
-
-    public partial class MovementController
-    {
-        private float _horizontalInput;
-        private float _verticalInput;
-
-        private bool _canMove = true;
-        private bool _isBeingMovedManually = false;
-
-        private Vector3 _moveDirection;
-        private float _turnSmoothVelocity;
-
-        private MovementSpeed _currentSpeed = MovementSpeed.Idling;
-
-        public MovementSpeed CurrentSpeed
-        {
-            get => _currentSpeed;
-            private set
-            {
-                if (value != _currentSpeed)
-                {
-                    _currentSpeed = value;
-                    EventRelayer.Instance.OnMovementSpeedChanged(_currentSpeed);
-                }
-            }
-        }
-
-        // Move Speed: 10
-        private void ProcessMovementInput()
         {
             if (!_canMove || _isBeingMovedManually)
             {
                 return;
             }
+                
+            ProcessMovementInput();
+        }
 
+        #region Event Listeners
+        private void MoveEventListener(object sender, Vector2 args)
+        {
+            _horizontalInput = args.x;
+            _verticalInput = args.y;
+        }
+
+        private void GearSwitchedEventListener(object sender, (GearType, GearType)args)
+        {
+            switch(args.Item2)
+            {
+                case GearType.None:
+                    _currentMode = MovementMode.Default;
+                    break;
+                case GearType.Mower:
+                    _currentMode = MovementMode.Mower;
+                    break;
+            }
+        }
+        #endregion
+
+        private void ProcessMovementInput()
+        {
+            switch(_currentMode)
+            {
+                case MovementMode.Default:
+                    ExecuteStandardMovement();
+                    break;
+                case MovementMode.Mower:
+                    ExecuteMowerMovement();
+                    break;
+            }
+        }
+
+        private void TogglePlayerControl(bool enable)
+        {
+            _canMove = enable;
+        }
+    }
+
+    #region Standard Movement
+    public partial class MovementController
+    {
+        private const float STANDARD_MOVE_SPEED = 10f;
+        private const float TURN_SMOOTH_TIME = 0.1f;
+
+        private float _currentTurnVelocity;
+
+        private void ExecuteStandardMovement()
+        {
             Vector3 direction = new Vector3(_horizontalInput, 0f, _verticalInput).normalized;
 
             if (direction.magnitude >= 0.1f)
             {
                 float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
 
-                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, 0.1f);
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _currentTurnVelocity, TURN_SMOOTH_TIME);
                 transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
                 _moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
 
-                _rigidbody.velocity = _moveDirection * _movementSpeed;
+                _rigidbody.velocity = _moveDirection * STANDARD_MOVE_SPEED;
             }
             else
             {
                 _rigidbody.velocity = Vector3.zero;
             }
         }
+    }
+    #endregion
 
-        // Move Speed: 5
-        // Rotation Speed: 75
-        private void ProcessMowerMovement()
+    #region Mower Movement
+    public partial class MovementController
+    {
+        private const float MOWER_MOVE_SPEED = 5.0f;
+        private const float MOWER_ROTATION_SPEED = 75.0f;
+
+        private void ExecuteMowerMovement()
         {
-            if (!_canMove || _isBeingMovedManually)
-            {
-                return;
-            }
-
             Vector3 direction = new Vector3(_horizontalInput, 0f, _verticalInput).normalized;
 
             // Only move if forward or backward input is given
@@ -133,14 +161,14 @@ namespace LawnCareSim.Player
                 if (direction.x > 0.1f)
                 {
                     _rigidbody.velocity = Vector3.zero;
-                    transform.RotateAround(_rightTurnPivot.transform.position, direction.z * Vector3.up, _rotationSpeed * Time.deltaTime);
+                    transform.RotateAround(_rightTurnAxis.transform.position, direction.z * Vector3.up, MOWER_ROTATION_SPEED * Time.deltaTime);
                 }
-                
+
                 // Rotating Right
                 else if (direction.x < -0.1f)
                 {
                     _rigidbody.velocity = Vector3.zero;
-                    transform.RotateAround(_leftTurnPivot.transform.position, direction.z * -Vector3.up, _rotationSpeed * Time.deltaTime);
+                    transform.RotateAround(_leftTurnAxis.transform.position, direction.z * -Vector3.up, MOWER_ROTATION_SPEED * Time.deltaTime);
                 }
 
                 // Otherwise move in forward direction
@@ -149,7 +177,7 @@ namespace LawnCareSim.Player
                     float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
                     _moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * transform.forward;
 
-                    _rigidbody.velocity = _moveDirection * _movementSpeed;
+                    _rigidbody.velocity = _moveDirection * MOWER_MOVE_SPEED;
                 }
             }
             else
@@ -157,10 +185,6 @@ namespace LawnCareSim.Player
                 _rigidbody.velocity = Vector3.zero;
             }
         }
-
-        private void TogglePlayerControl(bool enable)
-        {
-            _canMove = enable;
-        }
     }
+    #endregion
 }

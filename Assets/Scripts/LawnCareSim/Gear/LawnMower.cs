@@ -1,7 +1,7 @@
 ﻿using LawnCareSim.Grass;
 using UnityEngine;
 
-namespace LawnCareSim.Equipment
+namespace LawnCareSim.Gear
 {
     public partial class LawnMower : MonoBehaviour
     {
@@ -14,32 +14,21 @@ namespace LawnCareSim.Equipment
         private float _cutHeight = 0.5f;
 
         private Transform _groundCheckPoint;
-        private int _grassLayer;
-
-        private void OnGUI()
-        {
-            var width = UnityEngine.Camera.main.pixelWidth;
-            var height = UnityEngine.Camera.main.pixelHeight;
-            Rect mainRect = new Rect(width * 0.82f, height * 0.04f, 300, 200);
-
-            GUIStyle fontStyle = GUI.skin.label;
-            fontStyle.fontSize = 20;
-
-            GUI.Box(mainRect, GUIContent.none);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Energy {_energy}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Durability: {_durability}", fontStyle);
-        }
 
         private void Start()
         {
             // Later, do this at the start of a job
             _grassManager = GrassManager.Instance;
             _groundCheckPoint = transform.Find("GroundCheckPoint");
-            _grassLayer = LayerMask.NameToLayer("Grass");
         }
 
         private void OnTriggerEnter(Collider other)
         {
+            if (!_isActive)
+            {
+                return;
+            }
+
             if (other.tag == GRASS_TAG)
             {
                 if (_grassManager.CutGrass(other.gameObject.name, _cutHeight))
@@ -47,7 +36,6 @@ namespace LawnCareSim.Equipment
                     Use();
                 }
             }
-
         }
     }
 
@@ -61,6 +49,9 @@ namespace LawnCareSim.Equipment
         private float _energy = 1.0f;
         private float _durability = 1.0f;
         #endregion
+
+        #region Properties
+        public GearType GearType => GearType.Mower;
 
         public bool IsActive
         {
@@ -79,6 +70,7 @@ namespace LawnCareSim.Equipment
             get => _energy;
             set => _energy = Mathf.Clamp(value, 0f, 1.0f);
         }
+        #endregion
 
         public void TurnOn()
         {

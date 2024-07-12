@@ -8,6 +8,7 @@ using System;
 using UnityEngine;
 //using AnimationState = LawnCareSim.Animation.AnimationState;
 using LawnCareSim.Player;
+using LawnCareSim.Gear;
 
 namespace LawnCareSim.Events
 {
@@ -58,6 +59,15 @@ namespace LawnCareSim.Events
         {
             var blendData = new CameraBlendData { BlendFromCamera = blendFromCamera, BlendToCamera = blendToCamera };
             CameraChangeFinishedEvent?.Invoke(this, blendData);
+        }
+        #endregion
+
+        #region Gear
+        public EventHandler<(GearType, GearType)> GearSwitchedEvent;
+
+        public void OnGearSwitched(GearType prevGear, GearType newGear)
+        {
+            GearSwitchedEvent?.Invoke(this, (prevGear, newGear));
         }
         #endregion
 
