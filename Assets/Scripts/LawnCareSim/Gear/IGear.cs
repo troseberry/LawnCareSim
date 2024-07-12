@@ -24,5 +24,7 @@
         void TurnOn();
 
         void TurnOff();
+
+        void TogglePower();
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Core.GameFlow;
 using LawnCareSim.Events;
+using LawnCareSim.Input;
+using System;
 using UnityEngine;
 
 namespace LawnCareSim.Gear
@@ -13,6 +15,28 @@ namespace LawnCareSim.Gear
             Instance = this;
         }
 
+        private void Start()
+        {
+            InitializeManager();
+        }
+
+        public void InitializeManager()
+        {
+            _mowerGear = _lawnMowerGO.GetComponent<IGear>();
+
+            InputController.Instance.InteractEvent += InteractEventListener;
+        }
+
+        #region Event Listeners
+        private void InteractEventListener(object sender, EventArgs args)
+        {
+            if (_equippedGear != null)
+            {
+                _equippedGear.TogglePower();
+            }
+        }
+        #endregion
+
         private void OnGUI()
         {
             var width = UnityEngine.Camera.main.pixelWidth;
@@ -24,7 +48,7 @@ namespace LawnCareSim.Gear
             // Equipped Gear
             Rect mainRect = new Rect(width * 0.82f, height * 0.04f, 300, 200);
             GUI.Box(mainRect, GUIContent.none);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear?.GearType}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear?.GearType} | Powered On: {_equippedGear?.IsActive}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Energy {_equippedGear?.Energy}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Durability: {_equippedGear?.Durability}", fontStyle);
 
@@ -47,18 +71,37 @@ namespace LawnCareSim.Gear
     {
         private GearType _equippedGearType = GearType.None;
         private IGear _equippedGear;
+        private GameObject _equippedGearGO;
 
-        public void InitializeManager()
-        {
-            
-        }
+        private IGear _mowerGear;
+
+        [SerializeField] private GameObject _lawnMowerGO;
 
         private void SwitchGear(GearType newGear)
         {
-            var prevGearType = _equippedGearType;
-            _equippedGearType = newGear;
+            if (newGear == _equippedGearType)
+            {
+                return;
+            }
 
-            EventRelayer.Instance.OnGearSwitched(prevGearType, _equippedGearType);
+            _equippedGear?.TurnOff();
+            _equippedGearGO?.SetActive(false);
+
+            switch (newGear)
+            {
+                case GearType.Mower:
+                    _equippedGear = _mowerGear;
+                    _equippedGearGO = _lawnMowerGO;
+                    break;
+                default:
+                    _equippedGear = null;
+                    _equippedGearGO = null;
+                    break;
+            }
+
+            _equippedGearType = newGear;
+            _equippedGearGO?.SetActive(true);
+            EventRelayer.Instance.OnGearSwitched(_equippedGearType);
         }
     }
 }

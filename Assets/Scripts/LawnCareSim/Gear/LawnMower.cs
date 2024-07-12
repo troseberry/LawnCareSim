@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LawnCareSim.Gear
 {
-    public partial class LawnMower : MonoBehaviour
+    public partial class LawnMower
     {
         [SerializeField] private GameObject _grassClippingsPrefab;
         [SerializeField] private GameObject _clippingsSpawn;
@@ -24,7 +24,7 @@ namespace LawnCareSim.Gear
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_isActive)
+            if (!IsActive)
             {
                 return;
             }
@@ -39,59 +39,12 @@ namespace LawnCareSim.Gear
         }
     }
 
-    public partial class LawnMower : IGear
+    public partial class LawnMower : BaseGear
     {
-        #region Variables
-        private const float DECAY_RATE = 0.0001f;
-        private const float ENERGY_DRAIN_RATE = 0.001f;
+        public override GearType GearType => GearType.Mower;
 
-        private bool _isActive;
-        private float _energy = 1.0f;
-        private float _durability = 1.0f;
-        #endregion
-
-        #region Properties
-        public GearType GearType => GearType.Mower;
-
-        public bool IsActive
+        public override void Use()
         {
-            get => _isActive;
-            set => _isActive = value;
-        }
-
-        public float Durability
-        {
-            get => _durability;
-            set => _durability = Mathf.Clamp(value, 0f, 1.0f);
-        }
-            
-        public float Energy
-        {
-            get => _energy;
-            set => _energy = Mathf.Clamp(value, 0f, 1.0f);
-        }
-        #endregion
-
-        public void TurnOn()
-        {
-            if (_energy <= 0 || _durability <= 0)
-            {
-                return;
-            }
-
-            _isActive = true;
-        }
-
-        public void TurnOff()
-        {
-            _isActive = false;
-        }
-
-        public void Use()
-        {
-            Durability -= DECAY_RATE;
-            Energy -= ENERGY_DRAIN_RATE;
-
             if (ShouldSpawnClippings())
             {
                 var clippings = Instantiate(_grassClippingsPrefab);
@@ -101,10 +54,7 @@ namespace LawnCareSim.Gear
                 clippings.transform.position = adjustedSpawn;
             }
 
-            if (_durability <= 0 || _energy <= 0)
-            {
-                TurnOff();
-            }
+            base.Use();
         }
 
         private bool ShouldSpawnClippings()

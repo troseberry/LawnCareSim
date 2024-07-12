@@ -63,11 +63,11 @@ namespace LawnCareSim.Events
         #endregion
 
         #region Gear
-        public EventHandler<(GearType, GearType)> GearSwitchedEvent;
+        public EventHandler<GearType> GearSwitchedEvent;
 
-        public void OnGearSwitched(GearType prevGear, GearType newGear)
+        public void OnGearSwitched(GearType newGear)
         {
-            GearSwitchedEvent?.Invoke(this, (prevGear, newGear));
+            GearSwitchedEvent?.Invoke(this, newGear);
         }
         #endregion
 

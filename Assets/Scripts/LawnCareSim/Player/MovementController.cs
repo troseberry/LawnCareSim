@@ -80,9 +80,9 @@ namespace LawnCareSim.Player
             _verticalInput = args.y;
         }
 
-        private void GearSwitchedEventListener(object sender, (GearType, GearType)args)
+        private void GearSwitchedEventListener(object sender, GearType args)
         {
-            switch(args.Item2)
+            switch(args)
             {
                 case GearType.None:
                     _currentMode = MovementMode.Default;
