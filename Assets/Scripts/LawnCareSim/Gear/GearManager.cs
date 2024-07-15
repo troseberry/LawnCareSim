@@ -36,7 +36,55 @@ namespace LawnCareSim.Gear
             }
         }
         #endregion
+    }
 
+    public partial class GearManager : IManager
+    {
+        private GearType _equippedGearType = GearType.None;
+        private IGear _equippedGear;
+        private GameObject _equippedGearGO;
+
+        private IGear _mowerGear;
+        private IGear _edgerGear;
+
+        [SerializeField] private GameObject _lawnMowerGO;
+        [SerializeField] private GameObject _edgerGO;
+
+        private void SwitchGear(GearType newGear)
+        {
+            if (newGear == _equippedGearType)
+            {
+                return;
+            }
+
+            _equippedGear?.TurnOff();
+            _equippedGearGO?.SetActive(false);
+
+            switch (newGear)
+            {
+                case GearType.Mower:
+                    _equippedGear = _mowerGear;
+                    _equippedGearGO = _lawnMowerGO;
+                    break;
+                case GearType.Edger:
+                    _equippedGear = _edgerGear;
+                    _equippedGearGO = _edgerGO;
+                    break;
+                default:
+                    _equippedGear = null;
+                    _equippedGearGO = null;
+                    break;
+            }
+
+            _equippedGearType = newGear;
+            _equippedGearGO?.SetActive(true);
+            EventRelayer.Instance.OnGearSwitched(_equippedGearType);
+        }
+    }
+
+    #region Debug
+    public partial class GearManager
+    {
         private void OnGUI()
         {
             var width = UnityEngine.Camera.main.pixelWidth;
@@ -64,44 +112,12 @@ namespace LawnCareSim.Gear
             {
                 SwitchGear(GearType.Mower);
             }
+
+            if (GUI.Button(new Rect(bottomRect.x + 345, bottomRect.y + 25, 150, 150), "Edger"))
+            {
+                SwitchGear(GearType.Edger);
+            }
         }
     }
-
-    public partial class GearManager : IManager
-    {
-        private GearType _equippedGearType = GearType.None;
-        private IGear _equippedGear;
-        private GameObject _equippedGearGO;
-
-        private IGear _mowerGear;
-
-        [SerializeField] private GameObject _lawnMowerGO;
-
-        private void SwitchGear(GearType newGear)
-        {
-            if (newGear == _equippedGearType)
-            {
-                return;
-            }
-
-            _equippedGear?.TurnOff();
-            _equippedGearGO?.SetActive(false);
-
-            switch (newGear)
-            {
-                case GearType.Mower:
-                    _equippedGear = _mowerGear;
-                    _equippedGearGO = _lawnMowerGO;
-                    break;
-                default:
-                    _equippedGear = null;
-                    _equippedGearGO = null;
-                    break;
-            }
-
-            _equippedGearType = newGear;
-            _equippedGearGO?.SetActive(true);
-            EventRelayer.Instance.OnGearSwitched(_equippedGearType);
-        }
-    }
+    #endregion
 }

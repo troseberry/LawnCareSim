@@ -3,6 +3,7 @@
     public enum GearType
     {
         None,
-        Mower
+        Mower,
+        Edger
     }
 }
