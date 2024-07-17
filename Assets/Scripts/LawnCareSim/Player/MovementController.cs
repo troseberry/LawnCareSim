@@ -88,6 +88,7 @@ namespace LawnCareSim.Player
             {
                 case GearType.None:
                 case GearType.Edger:
+                case GearType.Striper:
                     _currentMode = MovementMode.Default;
                     UpdateMovementStats(args);
                     break;
@@ -104,6 +105,7 @@ namespace LawnCareSim.Player
     {
         private const float STANDARD_MOVE_SPEED = 10f;
         private const float EDGER_MOVE_SPEED = 6.0f;
+        private const float STRIPER_MOVE_SPEED = 6.0f;
         private const float TURN_SMOOTH_TIME = 0.1f;
         private const float MOWER_MOVE_SPEED = 5.0f;
         private const float MOWER_ROTATION_SPEED = 75.0f;
@@ -130,6 +132,9 @@ namespace LawnCareSim.Player
             {
                 case GearType.Edger:
                     _currentMoveSpeed = EDGER_MOVE_SPEED;
+                    break;
+                case GearType.Striper:
+                    _currentMoveSpeed = STRIPER_MOVE_SPEED;
                     break;
                 default:
                     _currentMoveSpeed = STANDARD_MOVE_SPEED;

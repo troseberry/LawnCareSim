@@ -24,6 +24,7 @@ namespace LawnCareSim.Gear
         {
             _mowerGear = _lawnMowerGO.GetComponent<IGear>();
             _edgerGear = _edgerGO.GetComponent<IGear>();
+            _striperGear = _striperGO.GetComponent<IGear>();
 
             InputController.Instance.InteractEvent += InteractEventListener;
         }
@@ -47,9 +48,11 @@ namespace LawnCareSim.Gear
 
         private IGear _mowerGear;
         private IGear _edgerGear;
+        private IGear _striperGear;
 
         [SerializeField] private GameObject _lawnMowerGO;
         [SerializeField] private GameObject _edgerGO;
+        [SerializeField] private GameObject _striperGO;
 
         private void SwitchGear(GearType newGear)
         {
@@ -70,6 +73,10 @@ namespace LawnCareSim.Gear
                 case GearType.Edger:
                     _equippedGear = _edgerGear;
                     _equippedGearGO = _edgerGO;
+                    break;
+                case GearType.Striper:
+                    _equippedGear = _striperGear;
+                    _equippedGearGO = _striperGO;
                     break;
                 default:
                     _equippedGear = null;
@@ -118,6 +125,11 @@ namespace LawnCareSim.Gear
             if (GUI.Button(new Rect(bottomRect.x + 345, bottomRect.y + 25, 150, 150), "Edger"))
             {
                 SwitchGear(GearType.Edger);
+            }
+
+            if (GUI.Button(new Rect(bottomRect.x + 510, bottomRect.y + 25, 150, 150), "Striper"))
+            {
+                SwitchGear(GearType.Striper);
             }
         }
     }

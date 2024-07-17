@@ -11,7 +11,7 @@ namespace LawnCareSim.Gear
         private GrassManager _grassManager;
 
         private const string GRASS_TAG = "Grass";
-        private float _cutHeight = 0.5f;
+        private float _cutHeight = 0.25f;
 
         private Transform _groundCheckPoint;
 

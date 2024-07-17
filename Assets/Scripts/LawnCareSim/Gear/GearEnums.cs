@@ -4,6 +4,7 @@
     {
         None,
         Mower,
-        Edger
+        Edger,
+        Striper
     }
 }

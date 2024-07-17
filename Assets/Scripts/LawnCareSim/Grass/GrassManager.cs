@@ -6,6 +6,7 @@ namespace LawnCareSim.Grass
     internal struct Grass
     {
         public GameObject GameObject;
+        public MeshRenderer GrassRenderer;
         public float Height;
         public bool WasCut;
     }
@@ -19,6 +20,9 @@ namespace LawnCareSim.Grass
     public partial class GrassManager : MonoBehaviour
     {
         public static GrassManager Instance;
+
+        [SerializeField] private Color _darkGrassStripe;
+        [SerializeField] private Color _lightGrassStripe;
 
         private void Awake()
         {
@@ -64,6 +68,32 @@ namespace LawnCareSim.Grass
 
             return false;
         }
+
+        public bool StripeGrass(string grassName, float rotation)
+        {
+            if (!_grass.TryGetValue(grassName, out var grass))
+            {
+                return false;
+            }
+
+            grass.GrassRenderer.material.SetColor("_BaseColor", GetColorForRotation(rotation));
+            return true;
+        }
+
+        private Color GetColorForRotation(float rotation)
+        {
+            float rotationScale = rotation;
+            if (rotationScale < 0f)
+            {
+                rotationScale += 360f;
+            }
+            rotationScale = Mathf.Clamp(rotationScale, 0f, 360f);
+            rotationScale /= 360f;
+
+            Debug.Log($"[GetColorForRotation] - Rotation: {rotation} | Scaled: {rotationScale}");
+
+            return Color.Lerp(_darkGrassStripe, _lightGrassStripe, rotationScale);
+        }
     }
 
     #region Debug
@@ -106,9 +136,10 @@ namespace LawnCareSim.Grass
                     _grass.Add(grass.name, new Grass
                     {
                         GameObject = grass,
+                        GrassRenderer = grass.GetComponentInChildren<MeshRenderer>(),
                         Height = grass.transform.localScale.y,
                         WasCut = false,
-                    });
+                    }); ;
                     grassCount++;
                     #endregion
 
