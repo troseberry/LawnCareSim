@@ -260,8 +260,8 @@ GameObject:
   - component: {fileID: 2340189698680269047}
   - component: {fileID: 7506339887211280972}
   m_Layer: 0
-  m_Name: OvergrownEdge
-  m_TagString: Grass
+  m_Name: GrassEdge
+  m_TagString: GrassEdge
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

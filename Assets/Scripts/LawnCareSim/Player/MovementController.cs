@@ -43,6 +43,8 @@ namespace LawnCareSim.Player
 
             InputController.Instance.MoveEvent += MoveEventListener;
             EventRelayer.Instance.GearSwitchedEvent += GearSwitchedEventListener;
+
+            _currentMoveSpeed = STANDARD_MOVE_SPEED;
         }
 
         #region GUI
@@ -85,7 +87,9 @@ namespace LawnCareSim.Player
             switch(args)
             {
                 case GearType.None:
+                case GearType.Edger:
                     _currentMode = MovementMode.Default;
+                    UpdateMovementStats(args);
                     break;
                 case GearType.Mower:
                     _currentMode = MovementMode.Mower;
@@ -93,10 +97,23 @@ namespace LawnCareSim.Player
             }
         }
         #endregion
+    }
+
+    
+    public partial class MovementController
+    {
+        private const float STANDARD_MOVE_SPEED = 10f;
+        private const float EDGER_MOVE_SPEED = 6.0f;
+        private const float TURN_SMOOTH_TIME = 0.1f;
+        private const float MOWER_MOVE_SPEED = 5.0f;
+        private const float MOWER_ROTATION_SPEED = 75.0f;
+
+        private float _currentTurnVelocity;
+        private float _currentMoveSpeed;
 
         private void ProcessMovementInput()
         {
-            switch(_currentMode)
+            switch (_currentMode)
             {
                 case MovementMode.Default:
                     ExecuteStandardMovement();
@@ -106,20 +123,19 @@ namespace LawnCareSim.Player
                     break;
             }
         }
-
-        private void TogglePlayerControl(bool enable)
+        
+        private void UpdateMovementStats(GearType newGear)
         {
-            _canMove = enable;
+            switch(newGear)
+            {
+                case GearType.Edger:
+                    _currentMoveSpeed = EDGER_MOVE_SPEED;
+                    break;
+                default:
+                    _currentMoveSpeed = STANDARD_MOVE_SPEED;
+                    break;
+            }
         }
-    }
-
-    #region Standard Movement
-    public partial class MovementController
-    {
-        private const float STANDARD_MOVE_SPEED = 10f;
-        private const float TURN_SMOOTH_TIME = 0.1f;
-
-        private float _currentTurnVelocity;
 
         private void ExecuteStandardMovement()
         {
@@ -134,21 +150,13 @@ namespace LawnCareSim.Player
 
                 _moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
 
-                _rigidbody.velocity = _moveDirection * STANDARD_MOVE_SPEED;
+                _rigidbody.velocity = _moveDirection * _currentMoveSpeed;
             }
             else
             {
                 _rigidbody.velocity = Vector3.zero;
             }
         }
-    }
-    #endregion
-
-    #region Mower Movement
-    public partial class MovementController
-    {
-        private const float MOWER_MOVE_SPEED = 5.0f;
-        private const float MOWER_ROTATION_SPEED = 75.0f;
 
         private void ExecuteMowerMovement()
         {
@@ -186,5 +194,4 @@ namespace LawnCareSim.Player
             }
         }
     }
-    #endregion
 }

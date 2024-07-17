@@ -1485,8 +1485,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grassPrefab: {fileID: 4868519555453722995, guid: 4113b4a9d17ce1f48b7e6abcc66ae9dd,
     type: 3}
-  _overgrownGrassPrefab: {fileID: 5111519794942474792, guid: e97aeed4b7424f34389a722d60b5fa41,
+  _grassEdgePrefab: {fileID: 5111519794942474792, guid: e97aeed4b7424f34389a722d60b5fa41,
     type: 3}
+  _grassClippingPrefab: {fileID: 0}
   _grassParent: {fileID: 1066124982}
   _horizontalRange: {x: -20, y: 20}
   _verticalRange: {x: -20, y: 20}
@@ -1754,6 +1755,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111519794942474792, guid: e97aeed4b7424f34389a722d60b5fa41,
+        type: 3}
+      propertyPath: m_TagString
+      value: GrassEdge
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -23,6 +23,7 @@ namespace LawnCareSim.Gear
         public void InitializeManager()
         {
             _mowerGear = _lawnMowerGO.GetComponent<IGear>();
+            _edgerGear = _edgerGO.GetComponent<IGear>();
 
             InputController.Instance.InteractEvent += InteractEventListener;
         }
@@ -96,9 +97,10 @@ namespace LawnCareSim.Gear
             // Equipped Gear
             Rect mainRect = new Rect(width * 0.82f, height * 0.04f, 300, 200);
             GUI.Box(mainRect, GUIContent.none);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear?.GearType} | Powered On: {_equippedGear?.IsActive}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Energy {_equippedGear?.Energy}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Durability: {_equippedGear?.Durability}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear?.GearType}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Powered On: {_equippedGear?.IsActive}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Energy {_equippedGear?.Energy}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 90, 250, 30), $"Durability: {_equippedGear?.Durability}", fontStyle);
 
             // Gear Switching
             Rect bottomRect = new Rect(width * 0.5f - 450, height * 0.8f, 900, 200);
