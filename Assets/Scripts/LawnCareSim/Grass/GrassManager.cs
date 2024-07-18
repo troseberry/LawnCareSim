@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 namespace LawnCareSim.Grass
 {
@@ -7,8 +8,10 @@ namespace LawnCareSim.Grass
     {
         public GameObject GameObject;
         public MeshRenderer GrassRenderer;
-        public float Height;
         public bool WasCut;
+        public float Height;
+        public bool HasBeenStriped;
+        public float StripeValue;
     }
 
     internal struct GrassEdge
@@ -21,6 +24,7 @@ namespace LawnCareSim.Grass
     {
         public static GrassManager Instance;
 
+        [SerializeField] private Color _baseColor;
         [SerializeField] private Color _darkGrassStripe;
         [SerializeField] private Color _lightGrassStripe;
 
@@ -45,6 +49,8 @@ namespace LawnCareSim.Grass
                 grass.Height = height;
                 grass.WasCut = true;
 
+                _grass[grassName] = grass;
+
                 return true;
             }
 
@@ -63,34 +69,95 @@ namespace LawnCareSim.Grass
                 grassEdge.GameObject.SetActive(false);
                 grassEdge.WasCut = true;
 
+                _grassEdges[edgeName] = grassEdge;
+
                 return true;
             }
 
             return false;
         }
 
-        public bool StripeGrass(string grassName, float rotation)
+        public bool StripeGrass(string grassName, float newRotation)
         {
             if (!_grass.TryGetValue(grassName, out var grass))
             {
                 return false;
             }
 
-            grass.GrassRenderer.material.SetColor("_BaseColor", GetColorForRotation(rotation));
+            float modRotation = ModifyStripeRotation(newRotation);
+
+            //if the new rotation is the exact opposite, just stripe completely over, otherwise, color mix
+            bool areRotationsOpposite = CheckForOppositeRotation(grass.StripeValue, modRotation);
+            if (grass.HasBeenStriped && !areRotationsOpposite)
+            {
+                modRotation = Mathf.Round((grass.StripeValue + modRotation) * 0.5f);
+            }
+
+            grass.HasBeenStriped = true;
+            grass.StripeValue = modRotation;
+            grass.GrassRenderer.material.SetColor("_BaseColor", GetColorForRotation(modRotation));
+
+            _grass[grassName] = grass;
+
             return true;
+        }
+
+        public bool ResetStriping(string grassName)
+        {
+            if (!_grass.TryGetValue(grassName, out var grass))
+            {
+                return false;
+            }
+
+            grass.HasBeenStriped = false;
+            grass.StripeValue = 0f;
+            grass.GrassRenderer.material.SetColor("_BaseColor", _baseColor);
+
+            _grass[grassName] = grass;
+
+            return true;
+        }
+
+        private bool CheckForOppositeRotation(float first, float second)
+        {
+            float firstRounded = Mathf.Round(first);
+            float secondRounded = Mathf.Round(second);
+            return Mathf.Abs(firstRounded - secondRounded) == 180f;
+        }
+
+        private float ModifyStripeRotation(float rotation)
+        {
+            float modRotation = rotation;
+            if (modRotation < 0f)
+            {
+                modRotation += 360f;
+            }
+            modRotation = Mathf.Clamp(modRotation, 0f, 360f);
+            modRotation /= 15.0f;
+            modRotation = Mathf.Round(modRotation);
+            modRotation *= 15.0f;
+
+            return modRotation;
         }
 
         private Color GetColorForRotation(float rotation)
         {
-            float rotationScale = rotation;
-            if (rotationScale < 0f)
-            {
-                rotationScale += 360f;
-            }
-            rotationScale = Mathf.Clamp(rotationScale, 0f, 360f);
-            rotationScale /= 360f;
+            float rotationScale = rotation / 360f;
 
-            Debug.Log($"[GetColorForRotation] - Rotation: {rotation} | Scaled: {rotationScale}");
+            //Debug.Log($"[GetColorForRotation] - Rotation: {rotation} | Scaled: {rotationScale}");
+
+            return Color.Lerp(_darkGrassStripe, _lightGrassStripe, rotationScale);
+        }
+
+        private Color GetColorForRotation(float newRotation, ref Grass toModify)
+        {
+            float midRotation = Mathf.Round((toModify.StripeValue + newRotation) * 0.5f);
+
+            float rotationScale = midRotation/360f;
+
+            Debug.Log($"[GetColorForRotation] - Prev/New/Mid: {toModify.StripeValue}/{newRotation}/{midRotation} | Scaled: {rotationScale}");
+
+            toModify.StripeValue = midRotation;
 
             return Color.Lerp(_darkGrassStripe, _lightGrassStripe, rotationScale);
         }
@@ -137,8 +204,10 @@ namespace LawnCareSim.Grass
                     {
                         GameObject = grass,
                         GrassRenderer = grass.GetComponentInChildren<MeshRenderer>(),
-                        Height = grass.transform.localScale.y,
                         WasCut = false,
+                        Height = grass.transform.localScale.y,
+                        HasBeenStriped = false,
+                        StripeValue = 0,
                     }); ;
                     grassCount++;
                     #endregion

@@ -60,8 +60,8 @@ namespace LawnCareSim.Gear
 
         public virtual void Use()
         {
-            Durability -= DECAY_RATE;
-            Energy -= ENERGY_DRAIN_RATE;
+            //Durability -= DECAY_RATE;
+            //Energy -= ENERGY_DRAIN_RATE;
 
             if (_durability <= 0 || _energy <= 0)
             {

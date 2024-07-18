@@ -62,7 +62,7 @@ namespace LawnCareSim.Gear
             }
 
             _equippedGear?.TurnOff();
-            _equippedGearGO?.SetActive(false);
+            if (_equippedGearGO != null) _equippedGearGO.SetActive(false);
 
             switch (newGear)
             {
@@ -85,7 +85,7 @@ namespace LawnCareSim.Gear
             }
 
             _equippedGearType = newGear;
-            _equippedGearGO?.SetActive(true);
+            if (_equippedGearGO != null) _equippedGearGO.SetActive(true);
             EventRelayer.Instance.OnGearSwitched(_equippedGearType);
         }
     }
