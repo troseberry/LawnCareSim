@@ -6,7 +6,6 @@ namespace LawnCareSim.Gear
 {
     public partial class LawnMower
     {
-        [SerializeField] private GameObject _grassClippingsPrefab;
         [SerializeField] private GameObject _clippingsSpawn;
         [SerializeField] private Transform _groundCheckPoint;
 
@@ -54,14 +53,9 @@ namespace LawnCareSim.Gear
 
         public override void Use()
         {
-            //Move to grass manager since this and edger use same functionality
             if (ShouldSpawnClippings())
             {
-                var clippings = Instantiate(_grassClippingsPrefab);
-                Vector3 adjustedSpawn = _clippingsSpawn.transform.position;
-                adjustedSpawn.y = clippings.transform.position.y;
-
-                clippings.transform.position = adjustedSpawn;
+                _grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
             }
 
             base.Use();

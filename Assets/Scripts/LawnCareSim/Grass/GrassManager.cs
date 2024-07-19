@@ -76,7 +76,7 @@ namespace LawnCareSim.Grass
 
         public void SpawnGrassClippings(Vector3 spawn)
         {
-
+            Instantiate(_grassClippingsPrefab, spawn, Quaternion.identity, _grassParent);
         }
 
         public bool StripeGrass(string grassName, float newRotation)
@@ -173,6 +173,7 @@ namespace LawnCareSim.Grass
 
         [SerializeField] private GameObject _grassPrefab;
         [SerializeField] private GameObject _grassEdgePrefab;
+        [SerializeField] private GameObject _grassClippingsPrefab;
         [SerializeField] private Transform _grassParent;
         [SerializeField] private Vector2 _horizontalRange;
         [SerializeField] private Vector2 _verticalRange;

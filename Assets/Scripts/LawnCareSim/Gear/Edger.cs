@@ -5,7 +5,6 @@ namespace LawnCareSim.Gear
 {
     public partial class Edger
     {
-        [SerializeField] private GameObject _grassClippingsPrefab;
         [SerializeField] private GameObject _clippingsSpawn;
 
         private const string GRASS_EDGE_TAG = "GrassEdge";
@@ -45,11 +44,7 @@ namespace LawnCareSim.Gear
         {
             if (ShouldSpawnClippings())
             {
-                var clippings = Instantiate(_grassClippingsPrefab);
-                Vector3 adjustedSpawn = _clippingsSpawn.transform.position;
-                adjustedSpawn.y = clippings.transform.position.y;
-
-                clippings.transform.position = adjustedSpawn;
+                _grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
             }
 
             base.Use();
