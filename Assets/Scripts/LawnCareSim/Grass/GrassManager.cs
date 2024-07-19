@@ -46,6 +46,14 @@ namespace LawnCareSim.Grass
             {
                 grass.GameObject.transform.localScale = new Vector3(1.0f, cutHeight, 1.0f);
                 grass.Height = cutHeight;
+
+                if (grass.HasBeenStriped)
+                {
+                    grass.HasBeenStriped = false;
+                    grass.StripeValue = 0f;
+                    grass.GrassRenderer.material.SetColor("_BaseColor", _baseColor);
+                }
+
                 _grass[grassName] = grass;
 
                 return true;
