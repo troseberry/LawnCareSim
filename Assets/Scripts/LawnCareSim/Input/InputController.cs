@@ -1,4 +1,5 @@
-﻿using LawnCareSim.UI;
+﻿using LawnCareSim.Gear;
+using LawnCareSim.UI;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,12 +11,15 @@ namespace LawnCareSim.Input
         public static InputController Instance;
         private InputMaster InputMaster;
 
+        public event EventHandler DebugMenuEvent;
+
+        public event EventHandler EscapeEvent;
+
         public event EventHandler<Vector2> MoveEvent;
         public event EventHandler InteractEvent;
         public event EventHandler TabMenuEvent;
-        public event EventHandler EscapeEvent;
 
-        public event EventHandler DebugMenuEvent;
+        public event EventHandler<float> AdjustedCutHeightEvent;
 
         void Awake()
         {
@@ -30,6 +34,9 @@ namespace LawnCareSim.Input
             InputMaster.MouseKeyboard.Enable();
             InputMaster.UI.Enable();
             InputMaster.Debug.Enable();
+            InputMaster.Mower.Disable();
+
+            InputMaster.Debug.DebugMenu.performed += DebugMenu;
 
             InputMaster.General.Escape.performed += Escape;
 
@@ -37,10 +44,9 @@ namespace LawnCareSim.Input
             InputMaster.MouseKeyboard.Interact.performed += Interact;
             InputMaster.MouseKeyboard.TabMenu.performed += TabMenu;
 
-            InputMaster.Debug.DebugMenu.performed += DebugMenu;
+            InputMaster.Mower.AdjustCutHeight.performed += AdjustCutHeight;
         }
 
-        
         public void EnableMenuInput(MenuName name, bool disableGameInput = true)
         {
             switch (name)
@@ -71,6 +77,13 @@ namespace LawnCareSim.Input
             }
         }
 
+        #region Debug
+        private void DebugMenu(InputAction.CallbackContext obj)
+        {
+            DebugMenuEvent?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+
         #region General
         private void Escape(InputAction.CallbackContext obj)
         {
@@ -96,10 +109,34 @@ namespace LawnCareSim.Input
         }
         #endregion
 
-        #region Debug
-        private void DebugMenu(InputAction.CallbackContext obj)
+        #region Gear
+        public void EnableGearInput(GearType gearType)
         {
-            DebugMenuEvent?.Invoke(this, EventArgs.Empty);
+            switch(gearType)
+            {
+                case GearType.Mower:
+                    InputMaster.Mower.Enable();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void DisableGearInput(GearType gearType)
+        {
+            switch (gearType)
+            {
+                case GearType.Mower:
+                    InputMaster.Mower.Disable();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AdjustCutHeight(InputAction.CallbackContext obj)
+        {
+            AdjustedCutHeightEvent?.Invoke(this, obj.ReadValue<float>());
         }
         #endregion
     }

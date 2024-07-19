@@ -26,5 +26,7 @@
         void TurnOff();
 
         void TogglePower();
+
+        string DebugUnuiqueStats();
     }
 }

@@ -684,6 +684,56 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Mower",
+            "id": "86d69537-3a2d-4419-beab-bafd685b98c4",
+            "actions": [
+                {
+                    "name": "AdjustCutHeight",
+                    "type": "Button",
+                    "id": "4957e0ee-f2d2-4dfa-b731-44094048dfdc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "17bf6679-68ba-4ff0-a214-061ae1be5d06",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCutHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "9ccab9f4-0554-4107-b620-899c699e6617",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCutHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "ad167d49-00bc-4746-b131-d017c01dd227",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCutHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
         }
     ],
     "controlSchemes": []

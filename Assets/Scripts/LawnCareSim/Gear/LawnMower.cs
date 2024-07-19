@@ -1,4 +1,5 @@
 ﻿using LawnCareSim.Grass;
+using LawnCareSim.Input;
 using UnityEngine;
 
 namespace LawnCareSim.Gear
@@ -7,19 +8,16 @@ namespace LawnCareSim.Gear
     {
         [SerializeField] private GameObject _grassClippingsPrefab;
         [SerializeField] private GameObject _clippingsSpawn;
+        [SerializeField] private Transform _groundCheckPoint;
+
+        private const string GRASS_TAG = "Grass";
 
         private GrassManager _grassManager;
 
-        private const string GRASS_TAG = "Grass";
-        private float _cutHeight = 0.25f;
-
-        private Transform _groundCheckPoint;
-
         private void Start()
         {
-            // Later, do this at the start of a job
             _grassManager = GrassManager.Instance;
-            _groundCheckPoint = transform.Find("GroundCheckPoint");
+            InputController.Instance.AdjustedCutHeightEvent += AdjustedCutHeightEventListener;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -37,14 +35,26 @@ namespace LawnCareSim.Gear
                 }
             }
         }
+
+        private void AdjustedCutHeightEventListener(object sender, float args)
+        {
+            AdjustCutHeight(args);
+        }
     }
 
     public partial class LawnMower : BaseGear
     {
+        private const float CUT_HEIGHT_INCREMENT = 0.05f;
+        private const float CUT_HEIGHT_MIN = 0.1f;
+        private const float CUT_HEIGHT_MAX = 1.0f;
+
+        private float _cutHeight = 0.5f;
+
         public override GearType GearType => GearType.Mower;
 
         public override void Use()
         {
+            //Move to grass manager since this and edger use same functionality
             if (ShouldSpawnClippings())
             {
                 var clippings = Instantiate(_grassClippingsPrefab);
@@ -68,6 +78,22 @@ namespace LawnCareSim.Gear
             }
 
             return true;
+        }
+
+        private void AdjustCutHeight(float dir)
+        {
+            float modValue = CUT_HEIGHT_INCREMENT * dir;
+            _cutHeight = Mathf.Clamp(_cutHeight + modValue, CUT_HEIGHT_MIN, CUT_HEIGHT_MAX);
+
+            // Eliminate extra digits from float math
+            _cutHeight *= 100f;
+            _cutHeight = Mathf.Round(_cutHeight);
+            _cutHeight /= 100f;
+        }
+
+        public override string DebugUnuiqueStats()
+        {
+            return $"Cut Height: {_cutHeight}";
         }
     }
 }

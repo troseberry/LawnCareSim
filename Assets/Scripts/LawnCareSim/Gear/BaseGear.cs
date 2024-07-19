@@ -68,5 +68,10 @@ namespace LawnCareSim.Gear
                 TurnOff();
             }
         }
+
+        public virtual string DebugUnuiqueStats()
+        {
+            return "";
+        }
     }
 }

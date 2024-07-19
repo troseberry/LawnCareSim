@@ -3,6 +3,7 @@ using LawnCareSim.Events;
 using LawnCareSim.Input;
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem.XInput;
 
 namespace LawnCareSim.Gear
 {
@@ -26,7 +27,8 @@ namespace LawnCareSim.Gear
             _edgerGear = _edgerGO.GetComponent<IGear>();
             _striperGear = _striperGO.GetComponent<IGear>();
 
-            InputController.Instance.InteractEvent += InteractEventListener;
+            _inputController = InputController.Instance;
+            _inputController.InteractEvent += InteractEventListener;
         }
 
         #region Event Listeners
@@ -42,6 +44,8 @@ namespace LawnCareSim.Gear
 
     public partial class GearManager : IManager
     {
+        private InputController _inputController;
+
         private GearType _equippedGearType = GearType.None;
         private IGear _equippedGear;
         private GameObject _equippedGearGO;
@@ -62,7 +66,7 @@ namespace LawnCareSim.Gear
             }
 
             _equippedGear?.TurnOff();
-            if (_equippedGearGO != null) _equippedGearGO.SetActive(false);
+            _equippedGearGO?.SetActive(false);
 
             switch (newGear)
             {
@@ -84,9 +88,17 @@ namespace LawnCareSim.Gear
                     break;
             }
 
+            HandleGearInputChange(_equippedGearType, newGear);
+
             _equippedGearType = newGear;
-            if (_equippedGearGO != null) _equippedGearGO.SetActive(true);
+            _equippedGearGO?.SetActive(true);
             EventRelayer.Instance.OnGearSwitched(_equippedGearType);
+        }
+
+        private void HandleGearInputChange(GearType prevGear, GearType newGear)
+        {
+            _inputController.DisableGearInput(prevGear);
+            _inputController.EnableGearInput(newGear);
         }
     }
 
@@ -108,6 +120,7 @@ namespace LawnCareSim.Gear
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Powered On: {_equippedGear?.IsActive}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Energy {_equippedGear?.Energy}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 90, 250, 30), $"Durability: {_equippedGear?.Durability}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 120, 300, 30), $"Stats: {_equippedGear?.DebugUnuiqueStats()}", fontStyle);
 
             // Gear Switching
             Rect bottomRect = new Rect(width * 0.5f - 450, height * 0.8f, 900, 200);

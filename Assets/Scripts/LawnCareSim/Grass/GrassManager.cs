@@ -35,20 +35,17 @@ namespace LawnCareSim.Grass
 
         // on start of job, would take predefined grass area and generate grass objects
 
-        public bool CutGrass(string grassName, float height)
+        public bool CutGrass(string grassName, float cutHeight)
         {
             if (!_grass.TryGetValue(grassName, out var grass))
             {
-                // Log
                 return false;
             }
 
-            if (!grass.WasCut && height < grass.Height)
+            if (cutHeight < grass.Height)
             {
-                grass.GameObject.transform.localScale = new Vector3(1.0f, height, 1.0f);
-                grass.Height = height;
-                grass.WasCut = true;
-
+                grass.GameObject.transform.localScale = new Vector3(1.0f, cutHeight, 1.0f);
+                grass.Height = cutHeight;
                 _grass[grassName] = grass;
 
                 return true;
@@ -75,6 +72,11 @@ namespace LawnCareSim.Grass
             }
 
             return false;
+        }
+
+        public void SpawnGrassClippings(Vector3 spawn)
+        {
+
         }
 
         public bool StripeGrass(string grassName, float newRotation)
