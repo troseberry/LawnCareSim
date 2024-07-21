@@ -19,7 +19,7 @@
         /// </summary>
         float Energy { get; set; }
 
-        void Use();
+        void Use(GearUsageData usageData);
 
         void TurnOn();
 

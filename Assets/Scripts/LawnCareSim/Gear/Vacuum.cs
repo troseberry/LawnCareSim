@@ -1,43 +1,42 @@
 ﻿using LawnCareSim.Grass;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LawnCareSim.Gear
 {
-    public partial class Vacuum
+    public class Vacuum : BaseGear
     {
         private const string GRASS_CLIPPINGS_TAG = "GrassClippings";
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            if (other.tag == GRASS_CLIPPINGS_TAG)
-            {
-                TryToVacuumClippings(other.gameObject);
-            }
-        }
-    }
-
-    public partial class Vacuum : BaseGear
-    {
+        private DefaultGearUsageData _gearData = new DefaultGearUsageData(null);
         private int _maximumBagSpace = 1000;
         private int _bagSpace = 0;
 
         public override GearType GearType => GearType.Vacuum;
 
-        private void TryToVacuumClippings(GameObject clippings)
+        #region Unity Methods
+        private void OnTriggerEnter(Collider other)
         {
-            if (IsBagFull())
+            if (other.tag == GRASS_CLIPPINGS_TAG)
+            {
+                _gearData.UsageObject = other.gameObject;
+                Use(_gearData);
+            }
+        }
+        #endregion
+
+        #region Gear
+        public override void Use(GearUsageData usageData)
+        {
+            if (!IsActive || IsBagFull() || usageData.UsageObject == null)
             {
                 return;
             }
 
-            Destroy(clippings);
+            Destroy(usageData.UsageObject);
             _bagSpace++;
-            Use();
+
+            base.Use(usageData);
         }
 
         public override string DebugUnuiqueStats()
@@ -49,5 +48,6 @@ namespace LawnCareSim.Gear
         {
             return _bagSpace >= _maximumBagSpace;
         }
+        #endregion
     }
 }

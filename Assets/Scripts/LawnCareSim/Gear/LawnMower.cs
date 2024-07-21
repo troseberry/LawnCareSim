@@ -6,13 +6,26 @@ namespace LawnCareSim.Gear
 {
     public partial class LawnMower
     {
+        
+    }
+
+    public partial class LawnMower : BaseGear
+    {
         [SerializeField] private GameObject _clippingsSpawn;
         [SerializeField] private Transform _groundCheckPoint;
 
         private const string GRASS_TAG = "Grass";
+        private const float CUT_HEIGHT_INCREMENT = 0.05f;
+        private const float CUT_HEIGHT_MIN = 0.1f;
+        private const float CUT_HEIGHT_MAX = 1.0f;
 
         private GrassManager _grassManager;
+        private float _cutHeight = 0.5f;
+        private DefaultGearUsageData _gearData = new DefaultGearUsageData(null);
 
+        public override GearType GearType => GearType.Mower;
+
+        #region Unity Methods
         private void Start()
         {
             _grassManager = GrassManager.Instance;
@@ -21,44 +34,39 @@ namespace LawnCareSim.Gear
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!IsActive)
-            {
-                return;
-            }
-
             if (other.tag == GRASS_TAG)
             {
-                if (_grassManager.CutGrass(other.gameObject.name, _cutHeight))
-                {
-                    Use();
-                }
+                _gearData.UsageObject = other.gameObject;
+                Use(_gearData);
             }
         }
+        #endregion
 
+        #region Event Listeners
         private void AdjustedCutHeightEventListener(object sender, float args)
         {
             AdjustCutHeight(args);
         }
-    }
+        #endregion
 
-    public partial class LawnMower : BaseGear
-    {
-        private const float CUT_HEIGHT_INCREMENT = 0.05f;
-        private const float CUT_HEIGHT_MIN = 0.1f;
-        private const float CUT_HEIGHT_MAX = 1.0f;
-
-        private float _cutHeight = 0.5f;
-
-        public override GearType GearType => GearType.Mower;
-
-        public override void Use()
+        #region Gear
+        public override void Use(GearUsageData data)
         {
-            if (ShouldSpawnClippings())
+            if (!IsActive || data.UsageObject == null)
             {
-                //_grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
+                return;
+            }
+            if (!_grassManager.CutGrass(data.UsageObject.name, _cutHeight))
+            {
+                return;
             }
 
-            base.Use();
+            if (ShouldSpawnClippings())
+            {
+                _grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
+            }
+
+            base.Use(data);
         }
 
         private bool ShouldSpawnClippings()
@@ -89,5 +97,6 @@ namespace LawnCareSim.Gear
         {
             return $"Cut Height: {_cutHeight}";
         }
+        #endregion
     }
 }

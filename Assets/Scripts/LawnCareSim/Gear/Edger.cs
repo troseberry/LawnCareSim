@@ -3,64 +3,48 @@ using UnityEngine;
 
 namespace LawnCareSim.Gear
 {
-    public partial class Edger
+    public class Edger : BaseGear
     {
         [SerializeField] private GameObject _clippingsSpawn;
 
         private const string GRASS_EDGE_TAG = "GrassEdge";
 
         private GrassManager _grassManager;
-        private Transform _groundCheckPoint;
+        private DefaultGearUsageData _gearData = new DefaultGearUsageData(null);
 
+        public override GearType GearType => GearType.Edger;
 
+        #region Unity Methods
         private void Start()
         {
             _grassManager = GrassManager.Instance;
-            _groundCheckPoint = transform.Find("GroundCheckPoint");
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!IsActive)
+            if (other.tag == GRASS_EDGE_TAG)
+            {
+                _gearData.UsageObject = other.gameObject;
+                Use(_gearData);
+            }
+        }
+        #endregion
+
+        #region Gear
+        public override void Use(GearUsageData data)
+        {
+            if (!IsActive || data.UsageObject == null)
             {
                 return;
             }
 
-            if (other.tag == GRASS_EDGE_TAG)
+            if (!_grassManager.CutGrassEdge(data.UsageObject.name))
             {
-                if (_grassManager.CutGrassEdge(other.gameObject.name))
-                {
-                    Use();
-                }
-            }
-        }
-    }
-
-    public partial class Edger : BaseGear
-    {
-        public override GearType GearType => GearType.Edger;
-
-        public override void Use()
-        {
-            if (ShouldSpawnClippings())
-            {
-                //_grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
+                return;
             }
 
-            base.Use();
+            base.Use(data);
         }
-
-        private bool ShouldSpawnClippings()
-        {
-            if (Physics.Raycast(_groundCheckPoint.transform.position, Vector3.down, out var hit, 1.0f))
-            {
-                if (hit.collider.tag == GRASS_EDGE_TAG)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        #endregion
     }
 }

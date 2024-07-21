@@ -14,12 +14,6 @@ namespace LawnCareSim.Grass
         public float StripeValue;
     }
 
-    internal struct GrassEdge
-    {
-        public GameObject GameObject;
-        public bool WasCut;
-    }
-
     public partial class GrassManager : MonoBehaviour
     {
         public static GrassManager Instance;
@@ -27,6 +21,8 @@ namespace LawnCareSim.Grass
         [SerializeField] private Color _baseColor;
         [SerializeField] private Color _darkGrassStripe;
         [SerializeField] private Color _lightGrassStripe;
+
+        private const string GRASS_CLIPPINGS_TAG = "GrassClippings";
 
         private void Awake()
         {
@@ -72,47 +68,20 @@ namespace LawnCareSim.Grass
                 return false;
             }
 
-            if (!grassEdge.WasCut)
-            {
-                grassEdge.GameObject.SetActive(false);
-                grassEdge.WasCut = true;
+            // Cut edge and change remainder to clippings
+            grassEdge.transform.GetChild(0).gameObject.SetActive(false);
+            grassEdge.tag = GRASS_CLIPPINGS_TAG;
 
-                _grassEdges[edgeName] = grassEdge;
+            _grassEdges.Remove(edgeName);
 
-                return true;
-            }
-
-            return false;
+            return true;
         }
         #endregion
 
         #region Clippings
-        public void SpawnGrassClippings(GameObject clippings, Vector3 spawn)
+        public void SpawnGrassClippings(Vector3 spawn)
         {
-            float rotation = clippings.transform.rotation.y;
-            if (rotation < 0) rotation += 360.0f;
-            rotation *= 90.0f;
-            rotation = Mathf.Round(rotation);
-            rotation /= 90.0f;
-
-            Vector3 spawnOffset = Vector3.zero;
-            switch(rotation)
-            {
-                case 0:
-                    spawnOffset = Vector3.right;
-                    break;
-                case 90:
-                    spawnOffset = Vector3.forward;
-                    break;
-                case 180:
-                    spawnOffset = Vector3.left;
-                    break;
-                case 270:
-                    spawnOffset = Vector3.back;
-                    break;
-            }
-
-            Instantiate(_grassClippingsPrefab, spawn + spawnOffset, Quaternion.identity, _grassParent);
+            Instantiate(_grassClippingsPrefab, spawn, Quaternion.identity, _grassParent);
         }
         #endregion
 
@@ -192,7 +161,7 @@ namespace LawnCareSim.Grass
     public partial class GrassManager
     {
         private Dictionary<string, Grass> _grass = new Dictionary<string, Grass>();
-        private Dictionary<string, GrassEdge> _grassEdges = new Dictionary<string, GrassEdge>();
+        private Dictionary<string, GameObject> _grassEdges = new Dictionary<string, GameObject>();
 
         [SerializeField] private GameObject _grassPrefab;
         [SerializeField] private GameObject _grassEdgePrefab;
@@ -247,32 +216,28 @@ namespace LawnCareSim.Grass
 
                         if (i == 0)
                         {
-                            edgeSpawn.x -= 1;
+                            edgeSpawn.x -= 1.0f;
                             edgeRotation = Quaternion.Euler(new Vector3(0f, 180f, 0f));
                         }
                         else if (i == xRange * 2)
                         {
-                            edgeSpawn.x += 1;
+                            edgeSpawn.x += 1.0f;
                         }
                         else if (j == 0)
                         {
-                            edgeSpawn.z -= 1;
+                            edgeSpawn.z -= 1.0f;
                             edgeRotation = Quaternion.Euler(new Vector3(0f, 90f, 0f));
                         }
                         else if (j == yRange * 2)
                         {
-                            edgeSpawn.z += 1;
+                            edgeSpawn.z += 1.0f;
                             edgeRotation = Quaternion.Euler(new Vector3(0f, 270f, 0f));
                         }
 
                         var edge = Instantiate(_grassEdgePrefab, edgeSpawn, edgeRotation, _grassParent);
                         edge.name = $"GrassEdge_{grassEdgeCount}";
+                        _grassEdges.Add(edge.name, edge);
 
-                        _grassEdges.Add(edge.name, new GrassEdge
-                        {
-                            GameObject = edge,
-                            WasCut = false
-                        });
                         grassEdgeCount++;
                     }
                     #endregion

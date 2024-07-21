@@ -58,7 +58,7 @@ namespace LawnCareSim.Gear
             }
         }
 
-        public virtual void Use()
+        public virtual void Use(GearUsageData usageData)
         {
             //Durability -= DECAY_RATE;
             //Energy -= ENERGY_DRAIN_RATE;
