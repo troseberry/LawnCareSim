@@ -35,6 +35,7 @@ namespace LawnCareSim.Grass
 
         // on start of job, would take predefined grass area and generate grass objects
 
+        #region Mowing
         public bool CutGrass(string grassName, float cutHeight)
         {
             if (!_grass.TryGetValue(grassName, out var grass))
@@ -61,7 +62,9 @@ namespace LawnCareSim.Grass
 
             return false;
         }
+        #endregion
 
+        #region Edging
         public bool CutGrassEdge(string edgeName)
         {
             if (!_grassEdges.TryGetValue(edgeName, out var grassEdge))
@@ -81,12 +84,39 @@ namespace LawnCareSim.Grass
 
             return false;
         }
+        #endregion
 
-        public void SpawnGrassClippings(Vector3 spawn)
+        #region Clippings
+        public void SpawnGrassClippings(GameObject clippings, Vector3 spawn)
         {
-            Instantiate(_grassClippingsPrefab, spawn, Quaternion.identity, _grassParent);
-        }
+            float rotation = clippings.transform.rotation.y;
+            if (rotation < 0) rotation += 360.0f;
+            rotation *= 90.0f;
+            rotation = Mathf.Round(rotation);
+            rotation /= 90.0f;
 
+            Vector3 spawnOffset = Vector3.zero;
+            switch(rotation)
+            {
+                case 0:
+                    spawnOffset = Vector3.right;
+                    break;
+                case 90:
+                    spawnOffset = Vector3.forward;
+                    break;
+                case 180:
+                    spawnOffset = Vector3.left;
+                    break;
+                case 270:
+                    spawnOffset = Vector3.back;
+                    break;
+            }
+
+            Instantiate(_grassClippingsPrefab, spawn + spawnOffset, Quaternion.identity, _grassParent);
+        }
+        #endregion
+
+        #region Striping
         public bool StripeGrass(string grassName, float newRotation)
         {
             if (!_grass.TryGetValue(grassName, out var grass))
@@ -153,24 +183,9 @@ namespace LawnCareSim.Grass
         private Color GetColorForRotation(float rotation)
         {
             float rotationScale = rotation / 360f;
-
-            //Debug.Log($"[GetColorForRotation] - Rotation: {rotation} | Scaled: {rotationScale}");
-
             return Color.Lerp(_darkGrassStripe, _lightGrassStripe, rotationScale);
         }
-
-        private Color GetColorForRotation(float newRotation, ref Grass toModify)
-        {
-            float midRotation = Mathf.Round((toModify.StripeValue + newRotation) * 0.5f);
-
-            float rotationScale = midRotation/360f;
-
-            Debug.Log($"[GetColorForRotation] - Prev/New/Mid: {toModify.StripeValue}/{newRotation}/{midRotation} | Scaled: {rotationScale}");
-
-            toModify.StripeValue = midRotation;
-
-            return Color.Lerp(_darkGrassStripe, _lightGrassStripe, rotationScale);
-        }
+        #endregion
     }
 
     #region Debug

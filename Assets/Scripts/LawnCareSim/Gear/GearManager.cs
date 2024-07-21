@@ -3,7 +3,6 @@ using LawnCareSim.Events;
 using LawnCareSim.Input;
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem.XInput;
 
 namespace LawnCareSim.Gear
 {
@@ -26,6 +25,7 @@ namespace LawnCareSim.Gear
             _mowerGear = _lawnMowerGO.GetComponent<IGear>();
             _edgerGear = _edgerGO.GetComponent<IGear>();
             _striperGear = _striperGO.GetComponent<IGear>();
+            _vacuumGear = _vacuumGO.GetComponent<IGear>();
 
             _inputController = InputController.Instance;
             _inputController.InteractEvent += InteractEventListener;
@@ -53,10 +53,12 @@ namespace LawnCareSim.Gear
         private IGear _mowerGear;
         private IGear _edgerGear;
         private IGear _striperGear;
+        private IGear _vacuumGear;
 
         [SerializeField] private GameObject _lawnMowerGO;
         [SerializeField] private GameObject _edgerGO;
         [SerializeField] private GameObject _striperGO;
+        [SerializeField] private GameObject _vacuumGO;
 
         private void SwitchGear(GearType newGear)
         {
@@ -81,6 +83,10 @@ namespace LawnCareSim.Gear
                 case GearType.Striper:
                     _equippedGear = _striperGear;
                     _equippedGearGO = _striperGO;
+                    break;
+                case GearType.Vacuum:
+                    _equippedGear = _vacuumGear;
+                    _equippedGearGO = _vacuumGO;
                     break;
                 default:
                     _equippedGear = null;
@@ -143,6 +149,11 @@ namespace LawnCareSim.Gear
             if (GUI.Button(new Rect(bottomRect.x + 510, bottomRect.y + 25, 150, 150), "Striper"))
             {
                 SwitchGear(GearType.Striper);
+            }
+
+            if (GUI.Button(new Rect(bottomRect.x + 675, bottomRect.y + 25, 150, 150), "Vacuum"))
+            {
+                SwitchGear(GearType.Vacuum);
             }
         }
     }

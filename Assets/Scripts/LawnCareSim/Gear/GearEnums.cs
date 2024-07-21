@@ -5,6 +5,7 @@
         None,
         Mower,
         Edger,
-        Striper
+        Striper,
+        Vacuum
     }
 }

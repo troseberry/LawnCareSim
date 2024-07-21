@@ -55,7 +55,7 @@ namespace LawnCareSim.Gear
         {
             if (ShouldSpawnClippings())
             {
-                _grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
+                //_grassManager.SpawnGrassClippings(_clippingsSpawn.transform.position);
             }
 
             base.Use();

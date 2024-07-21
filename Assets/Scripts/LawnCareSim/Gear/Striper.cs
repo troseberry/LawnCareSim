@@ -35,10 +35,5 @@ namespace LawnCareSim.Gear
     public partial class Striper : BaseGear
     {
         public override GearType GearType => GearType.Striper;
-
-        public override void Use()
-        {
-            base.Use();
-        }
     }
 }
