@@ -2,6 +2,8 @@
 {
     public interface IInteractable
     {
+        string Prompt { get; }
+
         void Initialize();
 
         bool CanInteract();
