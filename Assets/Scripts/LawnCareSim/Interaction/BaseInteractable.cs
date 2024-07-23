@@ -1,32 +1,33 @@
-﻿using UnityEngine;
+﻿using LawnCareSim.Events;
+using UnityEngine;
 
 namespace LawnCareSim.Interaction
 {
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
-        [SerializeField] private Canvas _interactionPromptCanvas;
+        private EventRelayer _eventRelayer;
 
-        private const string PlAYER_TAG = "Player";
+        private const string PLAYER_TAG = "Player";
 
         #region Unity Methods
         private void Start()
         {
-            _interactionPromptCanvas.enabled = false;
+            _eventRelayer = EventRelayer.Instance;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.tag == PlAYER_TAG)
+            if (other.tag == PLAYER_TAG)
             {
-                _interactionPromptCanvas.enabled = true;
+                _eventRelayer.OnEnteredInteractionZone(Prompt);
             }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.tag == PlAYER_TAG)
+            if (other.tag == PLAYER_TAG)
             {
-                _interactionPromptCanvas.enabled = false;
+                EventRelayer.Instance.OnExitedInteractionZone();
             }
         }
         #endregion

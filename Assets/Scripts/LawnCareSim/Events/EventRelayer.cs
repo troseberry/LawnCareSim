@@ -71,6 +71,21 @@ namespace LawnCareSim.Events
         }
         #endregion
 
+        #region Interaction
+        public EventHandler<string> EnteredInteractionZoneEvent;
+        public EventHandler ExitedInteractionZoneEvent;
+
+        public void OnEnteredInteractionZone(string promptToShow)
+        {
+            EnteredInteractionZoneEvent?.Invoke(this, promptToShow);
+        }
+
+        public void OnExitedInteractionZone()
+        {
+            ExitedInteractionZoneEvent?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+
         #region Inventory
         /*
         public event EventHandler<Item> ItemAddedEvent;
