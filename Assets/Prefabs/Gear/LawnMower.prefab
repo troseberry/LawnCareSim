@@ -814,7 +814,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 23, y: 1.25, z: -4.8199997}
-  m_LocalScale: {x: 2.5, y: 1, z: 2}
+  m_LocalScale: {x: 2.4999998, y: 1, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7076221064102448044}
@@ -835,10 +835,10 @@ ParentConstraint:
   m_Enabled: 1
   serializedVersion: 2
   m_Weight: 1
-  m_TranslationAtRest: {x: 8, y: 1.25, z: 0.49999976}
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationAtRest: {x: -19.5, y: -0.6500001, z: -8.474}
+  m_RotationAtRest: {x: 0, y: 90, z: 0}
   m_TranslationOffsets:
-  - {x: 0, y: -1.05, z: 2.6999998}
+  - {x: 0, y: -0.95000005, z: 3}
   m_RotationOffsets:
   - {x: 0, y: 90, z: 0}
   m_AffectTranslationX: 1

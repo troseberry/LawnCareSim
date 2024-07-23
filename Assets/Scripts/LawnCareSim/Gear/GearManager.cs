@@ -1,14 +1,20 @@
 ﻿using Core.GameFlow;
+using LawnCareSim.Data;
 using LawnCareSim.Events;
 using LawnCareSim.Input;
+using LawnCareSim.Player;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
 namespace LawnCareSim.Gear
 {
     public partial class GearManager : MonoBehaviour
     {
         public static GearManager Instance;
+
+        [SerializeField] private Transform _gearSpawn;
 
         private void Awake()
         {
@@ -22,21 +28,18 @@ namespace LawnCareSim.Gear
 
         public void InitializeManager()
         {
-            _mowerGear = _lawnMowerGO.GetComponent<IGear>();
-            _edgerGear = _edgerGO.GetComponent<IGear>();
-            _striperGear = _striperGO.GetComponent<IGear>();
-            _vacuumGear = _vacuumGO.GetComponent<IGear>();
-
             _inputController = InputController.Instance;
             _inputController.InteractEvent += InteractEventListener;
+
+            CreateDebugGearList();
         }
 
         #region Event Listeners
         private void InteractEventListener(object sender, EventArgs args)
         {
-            if (_equippedGear != null)
+            if (_equippedGear.IGear != null)
             {
-                _equippedGear.TogglePower();
+                _equippedGear.IGear.TogglePower();
             }
         }
         #endregion
@@ -46,59 +49,30 @@ namespace LawnCareSim.Gear
     {
         private InputController _inputController;
 
-        private GearType _equippedGearType = GearType.None;
-        private IGear _equippedGear;
-        private GameObject _equippedGearGO;
-
-        private IGear _mowerGear;
-        private IGear _edgerGear;
-        private IGear _striperGear;
-        private IGear _vacuumGear;
-
-        [SerializeField] private GameObject _lawnMowerGO;
-        [SerializeField] private GameObject _edgerGO;
-        [SerializeField] private GameObject _striperGO;
-        [SerializeField] private GameObject _vacuumGO;
+        private Dictionary<GearType, RuntimeGearData> _truckGear;
+        private EquippedGear _equippedGear = new EquippedGear();
 
         private void SwitchGear(GearType newGear)
         {
-            if (newGear == _equippedGearType)
+            if (newGear == _equippedGear.GearType)
             {
                 return;
             }
 
-            _equippedGear?.TurnOff();
-            _equippedGearGO?.SetActive(false);
+            _equippedGear.IGear?.TurnOff();
+            _equippedGear.GameObject?.SetActive(false);
 
-            switch (newGear)
+            if (!GetGear(newGear, out _equippedGear))
             {
-                case GearType.Mower:
-                    _equippedGear = _mowerGear;
-                    _equippedGearGO = _lawnMowerGO;
-                    break;
-                case GearType.Edger:
-                    _equippedGear = _edgerGear;
-                    _equippedGearGO = _edgerGO;
-                    break;
-                case GearType.Striper:
-                    _equippedGear = _striperGear;
-                    _equippedGearGO = _striperGO;
-                    break;
-                case GearType.Vacuum:
-                    _equippedGear = _vacuumGear;
-                    _equippedGearGO = _vacuumGO;
-                    break;
-                default:
-                    _equippedGear = null;
-                    _equippedGearGO = null;
-                    break;
+                return;
             }
 
-            HandleGearInputChange(_equippedGearType, newGear);
+            HandleGearInputChange(_equippedGear.GearType, newGear);
 
-            _equippedGearType = newGear;
-            _equippedGearGO?.SetActive(true);
-            EventRelayer.Instance.OnGearSwitched(_equippedGearType);
+            _equippedGear.GearType = newGear;
+            _equippedGear.GameObject?.SetActive(true);
+
+            EventRelayer.Instance.OnGearSwitched(_equippedGear.GearType);
         }
 
         private void HandleGearInputChange(GearType prevGear, GearType newGear)
@@ -106,11 +80,68 @@ namespace LawnCareSim.Gear
             _inputController.DisableGearInput(prevGear);
             _inputController.EnableGearInput(newGear);
         }
+
+        private bool GetGear(GearType gearType, out EquippedGear gear)
+        {
+            gear = new EquippedGear();
+
+            if (gearType == GearType.None)
+            {
+                return true;
+            }
+
+            if (!_truckGear.TryGetValue(gearType, out var gearEntry))
+            {
+                Debug.LogError($"[GearManager][GetGear] - Trying to get gear of type {gearType} but it is not present in loaded gear.");
+                return false;
+            }
+
+            // if either is null, try spawn again
+            if (gearEntry.GearScriptRef == null || gearEntry.GearGameObject == null)
+            {
+                gearEntry.GearGameObject = Instantiate(gearEntry.GearData.Prefab, _gearSpawn);
+
+                var parentConstraint = new ConstraintSource { sourceTransform = PlayerRef.Instance.transform, weight = 1.0f };
+                gearEntry.GearGameObject.GetComponent<ParentConstraint>().SetSource(0, parentConstraint);
+
+                gearEntry.GearScriptRef = gearEntry.GearGameObject.GetComponent<IGear>();
+                _truckGear[gearType] = gearEntry;
+            }
+
+            gear = new EquippedGear { GearType = gearType, IGear = gearEntry.GearScriptRef, GameObject = gearEntry.GearGameObject };
+            return true;
+        }
     }
 
     #region Debug
     public partial class GearManager
     {
+        private void CreateDebugGearList()
+        {
+            _truckGear = new Dictionary<GearType, RuntimeGearData>();
+
+            var dataManager = MasterDataManager.Instance.GearDataManager;
+            if (dataManager.GetGearData(GearVariant.FuelPushMower, out var mowerData))
+            {
+                _truckGear.Add(GearType.Mower, new RuntimeGearData(mowerData, null, null));
+            }
+
+            if (dataManager.GetGearData(GearVariant.FuelEdger, out var edgerData))
+            {
+                _truckGear.Add(GearType.Edger, new RuntimeGearData(edgerData, null, null));
+            }
+
+            if (dataManager.GetGearData(GearVariant.ManualPushStriper, out var striperData))
+            {
+                _truckGear.Add(GearType.Striper, new RuntimeGearData(striperData, null, null));
+            }
+
+            if (dataManager.GetGearData(GearVariant.FuelVacuum, out var vacuumData))
+            {
+                _truckGear.Add(GearType.Vacuum, new RuntimeGearData(vacuumData, null, null));
+            }
+        }
+
         private void OnGUI()
         {
             var width = UnityEngine.Camera.main.pixelWidth;
@@ -122,11 +153,11 @@ namespace LawnCareSim.Gear
             // Equipped Gear
             Rect mainRect = new Rect(width * 0.82f, height * 0.04f, 300, 200);
             GUI.Box(mainRect, GUIContent.none);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear?.GearType}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Powered On: {_equippedGear?.IsActive}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Energy {_equippedGear?.Energy}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 90, 250, 30), $"Durability: {_equippedGear?.Durability}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 120, 300, 30), $"Stats: {_equippedGear?.DebugUnuiqueStats()}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear.IGear?.GearType}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Powered On: {_equippedGear.IGear?.IsActive}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Energy {_equippedGear.IGear?.Energy}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 90, 250, 30), $"Durability: {_equippedGear.IGear?.Durability}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 120, 300, 30), $"Stats: {_equippedGear.IGear?.DebugUnuiqueStats()}", fontStyle);
 
             // Gear Switching
             Rect bottomRect = new Rect(width * 0.5f - 450, height * 0.8f, 900, 200);

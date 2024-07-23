@@ -8,4 +8,14 @@
         Striper,
         Vacuum
     }
+
+    public enum GearVariant
+    {
+        Invalid,
+
+        FuelPushMower,
+        FuelEdger,
+        ManualPushStriper,
+        FuelVacuum
+    }
 }
