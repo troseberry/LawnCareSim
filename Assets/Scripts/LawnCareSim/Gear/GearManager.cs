@@ -111,11 +111,25 @@ namespace LawnCareSim.Gear
             gear = new EquippedGear { GearType = gearType, IGear = gearEntry.GearScriptRef, GameObject = gearEntry.GearGameObject };
             return true;
         }
+
+        public List<GearInfo> GetAllGearInfo()
+        {
+            List<GearInfo> gearList = new List<GearInfo>();
+
+            foreach(var entry in _truckGear)
+            {
+                gearList.Add(entry.Value.GearData);
+            }
+
+            return gearList;
+        }
     }
 
     #region Debug
     public partial class GearManager
     {
+        public bool ShowDebugGUI;
+
         private void CreateDebugGearList()
         {
             _truckGear = new Dictionary<GearType, RuntimeGearData>();
@@ -144,6 +158,11 @@ namespace LawnCareSim.Gear
 
         private void OnGUI()
         {
+            if (!ShowDebugGUI)
+            {
+                return;
+            }
+
             var width = UnityEngine.Camera.main.pixelWidth;
             var height = UnityEngine.Camera.main.pixelHeight;
 

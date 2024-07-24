@@ -241,10 +241,7 @@ namespace LawnCareSim.Grass
                         grassEdgeCount++;
                     }
                     #endregion
-
-                    j++;
                 }
-                i++;
             }
         }
     }

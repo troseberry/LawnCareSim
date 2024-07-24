@@ -32,4 +32,16 @@ namespace LawnCareSim.Gear
         public IGear IGear;
         public GameObject GameObject;
     }
+
+    public struct GearStat
+    {
+        public string Name;
+        public float Value;
+
+        public GearStat(string name, float value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
 }
