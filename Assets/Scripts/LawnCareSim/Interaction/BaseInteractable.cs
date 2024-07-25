@@ -8,6 +8,7 @@ namespace LawnCareSim.Interaction
         private EventRelayer _eventRelayer;
 
         private const string PLAYER_TAG = "Player";
+        private bool _isInInteractionZone = false;
 
         #region Unity Methods
         private void Start()
@@ -19,6 +20,7 @@ namespace LawnCareSim.Interaction
         {
             if (other.tag == PLAYER_TAG)
             {
+                _isInInteractionZone = true;
                 _eventRelayer.OnEnteredInteractionZone(Prompt);
             }
         }
@@ -27,6 +29,7 @@ namespace LawnCareSim.Interaction
         {
             if (other.tag == PLAYER_TAG)
             {
+                _isInInteractionZone = false;
                 EventRelayer.Instance.OnExitedInteractionZone();
             }
         }
@@ -37,7 +40,7 @@ namespace LawnCareSim.Interaction
 
         public virtual bool CanInteract()
         {
-            return true;
+            return _isInInteractionZone;
         }
 
         public virtual void Initialize()
@@ -47,7 +50,10 @@ namespace LawnCareSim.Interaction
 
         public virtual void Interact()
         {
-
+            if (!CanInteract())
+            {
+                return;
+            }
         }
         #endregion
     }
