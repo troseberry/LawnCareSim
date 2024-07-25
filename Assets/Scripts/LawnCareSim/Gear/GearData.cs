@@ -14,15 +14,17 @@ namespace LawnCareSim.Gear
 
     public struct RuntimeGearData
     {
-        public GearInfo GearData;
-        public IGear GearScriptRef;
-        public GameObject GearGameObject;
+        public GearType GearType;
+        public GearInfo GearInfo;
+        public IGear IGear;
+        public GameObject GameObject;
 
-        public RuntimeGearData(GearInfo gearData, IGear gearScript, GameObject gearGO)
+        public RuntimeGearData(GearType gearType, GearInfo gearData, IGear gearScript, GameObject gearGO)
         {
-            GearData = gearData;
-            GearScriptRef = gearScript;
-            GearGameObject = gearGO;
+            GearType = gearType;
+            GearInfo = gearData;
+            IGear = gearScript;
+            GameObject = gearGO;
         }
     }
 
@@ -31,17 +33,5 @@ namespace LawnCareSim.Gear
         public GearType GearType;
         public IGear IGear;
         public GameObject GameObject;
-    }
-
-    public struct GearStat
-    {
-        public string Name;
-        public float Value;
-
-        public GearStat(string name, float value)
-        {
-            Name = name;
-            Value = value;
-        }
     }
 }

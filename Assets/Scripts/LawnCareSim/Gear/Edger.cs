@@ -10,7 +10,7 @@ namespace LawnCareSim.Gear
         private const string GRASS_EDGE_TAG = "GrassEdge";
 
         private GrassManager _grassManager;
-        private DefaultGearUsageData _gearData = new DefaultGearUsageData(null);
+        private DefaultGearUsageInfo _gearData = new DefaultGearUsageInfo(null);
 
         public override GearType GearType => GearType.Edger;
 
@@ -31,7 +31,7 @@ namespace LawnCareSim.Gear
         #endregion
 
         #region Gear
-        public override void Use(GearUsageData data)
+        public override void Use(GearUsageInfo data)
         {
             if (!IsActive || data.UsageObject == null)
             {

@@ -4,12 +4,7 @@ using UnityEngine;
 
 namespace LawnCareSim.Gear
 {
-    public partial class LawnMower
-    {
-        
-    }
-
-    public partial class LawnMower : BaseGear
+    public class LawnMower : BaseGear
     {
         [SerializeField] private GameObject _clippingsSpawn;
         [SerializeField] private Transform _groundCheckPoint;
@@ -21,7 +16,7 @@ namespace LawnCareSim.Gear
 
         private GrassManager _grassManager;
         private float _cutHeight = 0.5f;
-        private DefaultGearUsageData _gearData = new DefaultGearUsageData(null);
+        private DefaultGearUsageInfo _gearData = new DefaultGearUsageInfo(null);
 
         public override GearType GearType => GearType.Mower;
 
@@ -50,7 +45,7 @@ namespace LawnCareSim.Gear
         #endregion
 
         #region Gear
-        public override void Use(GearUsageData data)
+        public override void Use(GearUsageInfo data)
         {
             if (!IsActive || data.UsageObject == null)
             {

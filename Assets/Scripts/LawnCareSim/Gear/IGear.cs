@@ -1,4 +1,6 @@
-﻿namespace LawnCareSim.Gear
+﻿using System.Collections.Generic;
+
+namespace LawnCareSim.Gear
 {
     public interface IGear
     {
@@ -9,6 +11,14 @@
         /// </summary>
         bool IsActive { get; set; }
 
+        Dictionary<GearStatName, GearStat> Stats { get; }
+
+        GearStat DurabilityStat { get; }
+
+        GearStat EnergyStat { get; }
+
+        bool RequiresEnergy { get; }
+        /*
         /// <summary>
         /// Health of gear. From 0 to 1
         /// </summary>
@@ -18,8 +28,11 @@
         /// How much fuel or power charge the gear has
         /// </summary>
         float Energy { get; set; }
+        */
 
-        void Use(GearUsageData usageData);
+        void Initialize(EnergyType energyType);
+
+        void Use(GearUsageInfo usageData);
 
         void TurnOn();
 

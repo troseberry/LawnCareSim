@@ -10,6 +10,8 @@ using UnityEngine.Animations;
 
 namespace LawnCareSim.Gear
 {
+    // TO-DO: maybe rename to TruckGearManager. Anticipating there will be another manager for gear when not on a job. Like in the garage
+    // Or keep all gear stuff to one class
     public partial class GearManager : MonoBehaviour
     {
         public static GearManager Instance;
@@ -50,9 +52,9 @@ namespace LawnCareSim.Gear
         private InputController _inputController;
 
         private Dictionary<GearType, RuntimeGearData> _truckGear;
-        private EquippedGear _equippedGear = new EquippedGear();
+        private RuntimeGearData _equippedGear = new RuntimeGearData();
 
-        private void SwitchGear(GearType newGear)
+        internal void SwitchGear(GearType newGear)
         {
             if (newGear == _equippedGear.GearType)
             {
@@ -62,7 +64,7 @@ namespace LawnCareSim.Gear
             _equippedGear.IGear?.TurnOff();
             _equippedGear.GameObject?.SetActive(false);
 
-            if (!GetGear(newGear, out _equippedGear))
+            if (!_truckGear.TryGetValue(newGear, out _equippedGear))
             {
                 return;
             }
@@ -81,35 +83,29 @@ namespace LawnCareSim.Gear
             _inputController.EnableGearInput(newGear);
         }
 
-        private bool GetGear(GearType gearType, out EquippedGear gear)
+        private void SpawnGear()
         {
-            gear = new EquippedGear();
-
-            if (gearType == GearType.None)
+            List<RuntimeGearData> newEntries = new List<RuntimeGearData>();
+            foreach(var entry in _truckGear)
             {
-                return true;
-            }
+                var gearEntry = entry.Value;
 
-            if (!_truckGear.TryGetValue(gearType, out var gearEntry))
-            {
-                Debug.LogError($"[GearManager][GetGear] - Trying to get gear of type {gearType} but it is not present in loaded gear.");
-                return false;
-            }
-
-            // if either is null, try spawn again
-            if (gearEntry.GearScriptRef == null || gearEntry.GearGameObject == null)
-            {
-                gearEntry.GearGameObject = Instantiate(gearEntry.GearData.Prefab, _gearSpawn);
+                gearEntry.GameObject = Instantiate(gearEntry.GearInfo.Prefab, _gearSpawn);
 
                 var parentConstraint = new ConstraintSource { sourceTransform = PlayerRef.Instance.transform, weight = 1.0f };
-                gearEntry.GearGameObject.GetComponent<ParentConstraint>().SetSource(0, parentConstraint);
+                gearEntry.GameObject.GetComponent<ParentConstraint>().SetSource(0, parentConstraint);
 
-                gearEntry.GearScriptRef = gearEntry.GearGameObject.GetComponent<IGear>();
-                _truckGear[gearType] = gearEntry;
+                gearEntry.IGear = gearEntry.GameObject.GetComponent<IGear>();
+                gearEntry.GameObject.SetActive(false);
+
+                newEntries.Add(gearEntry);
             }
 
-            gear = new EquippedGear { GearType = gearType, IGear = gearEntry.GearScriptRef, GameObject = gearEntry.GearGameObject };
-            return true;
+            foreach(var gear in newEntries)
+            {
+                gear.IGear.Initialize(GearHelpers.GetEnergyTypeForVariant(gear.GearInfo.Variant));
+                _truckGear[gear.GearType] = gear;
+            }
         }
 
         public List<GearInfo> GetAllGearInfo()
@@ -118,10 +114,28 @@ namespace LawnCareSim.Gear
 
             foreach(var entry in _truckGear)
             {
-                gearList.Add(entry.Value.GearData);
+                gearList.Add(entry.Value.GearInfo);
             }
 
             return gearList;
+        }
+
+        public bool GetGearStatsForType(GearType type, out List<GearStat> stats)
+        {
+            stats = null;
+
+            if (!_truckGear.TryGetValue(type, out var data))
+            {
+                return false;
+            }
+
+            stats = new List<GearStat>();
+            foreach(var stat in data.IGear.Stats)
+            {
+                stats.Add(stat.Value);
+            }
+
+            return true;
         }
     }
 
@@ -137,23 +151,25 @@ namespace LawnCareSim.Gear
             var dataManager = MasterDataManager.Instance.GearDataManager;
             if (dataManager.GetGearData(GearVariant.FuelPushMower, out var mowerData))
             {
-                _truckGear.Add(GearType.Mower, new RuntimeGearData(mowerData, null, null));
+                _truckGear.Add(GearType.Mower, new RuntimeGearData(GearType.Mower, mowerData, null, null));
             }
 
             if (dataManager.GetGearData(GearVariant.FuelEdger, out var edgerData))
             {
-                _truckGear.Add(GearType.Edger, new RuntimeGearData(edgerData, null, null));
+                _truckGear.Add(GearType.Edger, new RuntimeGearData(GearType.Edger, edgerData, null, null));
             }
 
             if (dataManager.GetGearData(GearVariant.ManualPushStriper, out var striperData))
             {
-                _truckGear.Add(GearType.Striper, new RuntimeGearData(striperData, null, null));
+                _truckGear.Add(GearType.Striper, new RuntimeGearData(GearType.Striper, striperData, null, null));
             }
 
             if (dataManager.GetGearData(GearVariant.FuelVacuum, out var vacuumData))
             {
-                _truckGear.Add(GearType.Vacuum, new RuntimeGearData(vacuumData, null, null));
+                _truckGear.Add(GearType.Vacuum, new RuntimeGearData(GearType.Vacuum, vacuumData, null, null));
             }
+
+            SpawnGear();
         }
 
         private void OnGUI()
@@ -174,8 +190,8 @@ namespace LawnCareSim.Gear
             GUI.Box(mainRect, GUIContent.none);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Equipped Gear: {_equippedGear.IGear?.GearType}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Powered On: {_equippedGear.IGear?.IsActive}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"Energy {_equippedGear.IGear?.Energy}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 90, 250, 30), $"Durability: {_equippedGear.IGear?.Durability}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 60, 250, 30), $"{_equippedGear.IGear?.EnergyStat}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 90, 250, 30), $"{_equippedGear.IGear?.DurabilityStat}", fontStyle);
             GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 120, 300, 30), $"Stats: {_equippedGear.IGear?.DebugUnuiqueStats()}", fontStyle);
 
             // Gear Switching

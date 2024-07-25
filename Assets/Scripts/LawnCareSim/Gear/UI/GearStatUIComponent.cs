@@ -9,6 +9,11 @@ namespace LawnCareSim.Gear
     {
         [SerializeField] private TextMeshProUGUI _statNameText;
         [SerializeField] private Slider _statSlider;
+        [SerializeField] private Image _fillImage;
+
+        [SerializeField] private Color _green;
+        [SerializeField] private Color _yellow;
+        [SerializeField] private Color _red;
 
         private GearStat _backingData;
 
@@ -24,11 +29,14 @@ namespace LawnCareSim.Gear
 
         public override void UpdateInterface()
         {
-            _statNameText.text = _backingData.Name;
+            _statNameText.text = _backingData.Name.ToString();
             _statNameText.enabled = true;
 
+            _fillImage.color = GetColorForStatValue();
+
             _statSlider.value = _backingData.Value;
-            _statSlider.enabled = false;
+            _statSlider.enabled = true;
+
         }
 
         public override void Clear(bool clearBackingData)
@@ -40,6 +48,22 @@ namespace LawnCareSim.Gear
 
             _statSlider.enabled = false;
             _statSlider.value = 0;
+        }
+
+        private Color GetColorForStatValue()
+        {
+            if (_backingData.Value <= 0.33)
+            {
+                return _red;
+            }
+            else if (_backingData.Value >= 0.66)
+            {
+                return _green;
+            }
+            else
+            {
+                return _yellow;
+            }
         }
     }
 }
