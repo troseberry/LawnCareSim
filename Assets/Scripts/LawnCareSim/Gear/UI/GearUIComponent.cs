@@ -8,6 +8,8 @@ namespace LawnCareSim.Gear
     public partial class GearUIComponent : BaseMenuUIComponent
     {
         [SerializeField] private Image _gearImage;
+        [SerializeField] private Outline _outline;
+
         private GearInfo _backingData;
 
         public override object BackingData
@@ -38,8 +40,13 @@ namespace LawnCareSim.Gear
 
             _gearImage.enabled = false;
             _gearImage.sprite = null;
+
+            Outline(false);
         }
 
-        
+        public void Outline(bool state)
+        {
+            _outline.enabled = state;
+        }
     }
 }

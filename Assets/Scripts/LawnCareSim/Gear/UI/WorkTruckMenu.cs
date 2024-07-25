@@ -26,6 +26,7 @@ namespace LawnCareSim.Gear
 
         private List<GearInfo> _gearData = new List<GearInfo>();
         private List<(GameObject, GearUIComponent)> _gearList = new List<(GameObject, GearUIComponent)>();
+        private (GameObject, GearUIComponent) _hoveredEntry;
         private (GameObject, GearUIComponent) _selectedEntry;
 
         private List<GameObject> _statObjects = new List<GameObject>();
@@ -96,13 +97,15 @@ namespace LawnCareSim.Gear
                     Entry pointerClickEntry = new Entry { eventID = EventTriggerType.PointerClick };
                     pointerClickEntry.callback.AddListener((data) =>
                     {
+                        //_selectedEntry.Item2.Outline(false);
+                        //_selectedEntry = entry;
                         InitiateGearSwitch();
                     });
 
                     Entry pointerEnterEntry = new Entry { eventID = EventTriggerType.PointerEnter };
                     pointerEnterEntry.callback.AddListener((data) =>
                     {
-                        _selectedEntry = entry;
+                        _hoveredEntry = entry;
                         ShowDetailsPanel();
                     });
 
@@ -173,13 +176,13 @@ namespace LawnCareSim.Gear
 
         private void ShowDetailsPanel()
         {
-            var currentInfo = ((GearInfo)_selectedEntry.Item2.BackingData);
+            var currentInfo = ((GearInfo)_hoveredEntry.Item2.BackingData);
             FillStatSlots(currentInfo.GearType);
 
             _gearNameText.text = currentInfo.Variant.ToString();
 
             Vector3 newPosition = _detailsGroup.transform.position;
-            newPosition.x = _selectedEntry.Item1.transform.position.x;
+            newPosition.x = _hoveredEntry.Item1.transform.position.x;
             _detailsGroup.transform.position = newPosition;
 
             _detailsGroup.SetActive(true);
@@ -192,8 +195,30 @@ namespace LawnCareSim.Gear
 
         private void InitiateGearSwitch()
         {
+            if (_selectedEntry != default)
+            {
+                _selectedEntry.Item2.Outline(false);
+            }
+
+            bool clearSelected = false;
+            if (_selectedEntry != _hoveredEntry)
+            {
+                _hoveredEntry.Item2.Outline(true);
+            }
+            else
+            {
+                clearSelected = true;
+            }
+
+            _selectedEntry = _hoveredEntry;
+
             var currentInfo = ((GearInfo)_selectedEntry.Item2.BackingData);
             _gearManager.SwitchGear(currentInfo.GearType, true);
+
+            if (clearSelected)
+            {
+                _selectedEntry = default;
+            }
         }
     }
 }
