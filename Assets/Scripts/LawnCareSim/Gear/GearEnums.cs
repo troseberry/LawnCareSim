@@ -2,7 +2,9 @@
 {
     public enum GearType
     {
-        None,
+        Invalid = -1,
+
+        None = 0,
         Mower,
         Edger,
         Striper,

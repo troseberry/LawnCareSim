@@ -54,27 +54,56 @@ namespace LawnCareSim.Gear
         private Dictionary<GearType, RuntimeGearData> _truckGear;
         private RuntimeGearData _equippedGear = new RuntimeGearData();
 
-        internal void SwitchGear(GearType newGear)
+        /// <summary>
+        /// Change currently equipped gear.
+        /// </summary>
+        /// <param name="newGear"></param>
+        /// <param name="unequippSameSelection">Will unequipp currently selected gear if newGear is the same as already equipped</param>
+        internal void SwitchGear(GearType newGear, bool unequippSameSelection = false)
         {
             if (newGear == _equippedGear.GearType)
             {
-                return;
+                if (!unequippSameSelection)
+                {
+                    return;
+                }
+
+                newGear = GearType.None;
             }
 
             _equippedGear.IGear?.TurnOff();
             _equippedGear.GameObject?.SetActive(false);
 
-            if (!_truckGear.TryGetValue(newGear, out _equippedGear))
+            bool emptyHands = newGear == GearType.None;
+            bool result = _truckGear.TryGetValue(newGear, out var foundGear);
+
+            if (!emptyHands && !result)
             {
+                Debug.LogError($"[{this}][{nameof(SwitchGear)}] - Trying to switch gear to type {newGear} but it does not exist in truck gear.");
                 return;
             }
 
             HandleGearInputChange(_equippedGear.GearType, newGear);
-
-            _equippedGear.GearType = newGear;
-            _equippedGear.GameObject?.SetActive(true);
+            ChangeEquippedGearData(foundGear, emptyHands);
 
             EventRelayer.Instance.OnGearSwitched(_equippedGear.GearType);
+        }
+
+        private void ChangeEquippedGearData(RuntimeGearData newData, bool emptyHands)
+        {
+            if (emptyHands)
+            {
+                _equippedGear.GearType = GearType.None;
+                _equippedGear.GearInfo = default;
+                _equippedGear.IGear = null;
+                _equippedGear.GameObject = null;
+            }
+            else
+            {
+                _equippedGear = newData;
+                _equippedGear.GearType = newData.GearType;
+                _equippedGear.GameObject?.SetActive(true);
+            }
         }
 
         private void HandleGearInputChange(GearType prevGear, GearType newGear)

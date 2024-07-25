@@ -193,7 +193,7 @@ namespace LawnCareSim.Gear
         private void InitiateGearSwitch()
         {
             var currentInfo = ((GearInfo)_selectedEntry.Item2.BackingData);
-            _gearManager.SwitchGear(currentInfo.GearType);
+            _gearManager.SwitchGear(currentInfo.GearType, true);
         }
     }
 }
