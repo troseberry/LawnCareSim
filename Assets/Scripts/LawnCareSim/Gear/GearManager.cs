@@ -16,7 +16,7 @@ namespace LawnCareSim.Gear
     {
         public static GearManager Instance;
 
-        [SerializeField] private Transform _gearSpawn;
+        private Transform _gearSpawn;
 
         private void Awake()
         {
@@ -32,6 +32,8 @@ namespace LawnCareSim.Gear
         {
             _inputController = InputController.Instance;
             _inputController.InteractEvent += InteractEventListener;
+
+            _gearSpawn = GameObject.Find("GearSpawn").transform;
 
             CreateDebugGearList();
         }
