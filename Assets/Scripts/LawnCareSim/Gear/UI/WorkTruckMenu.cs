@@ -199,7 +199,7 @@ namespace LawnCareSim.Gear
 
             var currentInfo = ((GearInfo)_selectedEntry.Item2.BackingData);
             _gearManager.SwitchGear(currentInfo.GearType, true);
-
+            _gearManager.MovePlayerToTruckSpawn();
             if (clearSelected)
             {
                 _selectedEntry = default;

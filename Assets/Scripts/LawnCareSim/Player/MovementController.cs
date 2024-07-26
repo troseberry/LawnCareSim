@@ -33,6 +33,7 @@ namespace LawnCareSim.Player
         private Rigidbody _rigidbody;
         #endregion
 
+        #region Unity Methods
         private void Awake()
         {
             Instance = this;
@@ -48,25 +49,8 @@ namespace LawnCareSim.Player
             EventRelayer.Instance.GearSwitchedEvent += GearSwitchedEventListener;
             EventRelayer.Instance.MenuOpenedEvent += MenuOpenedEventListener;
             EventRelayer.Instance.MenuClosedEvent += MenuClosedEventListener;
+            EventRelayer.Instance.RequestMovePlayerEvent += RequestMovepLayerEventListener;
         }
-
-        #region GUI
-        /*
-        private void OnGUI()
-        {
-            var width = UnityEngine.Camera.main.pixelWidth;
-            var height = UnityEngine.Camera.main.pixelHeight;
-            Rect mainRect = new Rect(width * 0.2f, height * 0.04f, 300, 200);
-
-            GUIStyle fontStyle = GUI.skin.label;
-            fontStyle.fontSize = 20;
-
-            GUI.Box(mainRect, GUIContent.none);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Horz {_horizontalInput} |Vert: {_verticalInput}", fontStyle);
-            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Velocity: {_rigidbody.velocity}", fontStyle);
-        }
-        */
-        #endregion
 
         private void Update()
         {
@@ -77,6 +61,7 @@ namespace LawnCareSim.Player
                 
             ProcessMovementInput();
         }
+        #endregion
 
         #region Event Listeners
         private void MoveEventListener(object sender, Vector2 args)
@@ -110,6 +95,13 @@ namespace LawnCareSim.Player
                     _currentMode = MovementMode.Mower;
                     break;
             }
+        }
+
+        private void RequestMovepLayerEventListener(object sender, Transform args)
+        {
+            //_characterController.enabled = false;
+            transform.position = args.position;
+            //_characterController.enabled = true;
         }
         #endregion
     }
@@ -214,4 +206,28 @@ namespace LawnCareSim.Player
             }
         }
     }
+
+    #region Debug
+    public partial class MovementController
+    {
+
+        #region GUI
+        /*
+        private void OnGUI()
+        {
+            var width = UnityEngine.Camera.main.pixelWidth;
+            var height = UnityEngine.Camera.main.pixelHeight;
+            Rect mainRect = new Rect(width * 0.2f, height * 0.04f, 300, 200);
+
+            GUIStyle fontStyle = GUI.skin.label;
+            fontStyle.fontSize = 20;
+
+            GUI.Box(mainRect, GUIContent.none);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y, 250, 30), $"Horz {_horizontalInput} |Vert: {_verticalInput}", fontStyle);
+            GUI.Label(new Rect(mainRect.x + 5, mainRect.y + 30, 250, 30), $"Velocity: {_rigidbody.velocity}", fontStyle);
+        }
+        */
+        #endregion
+    }
+    #endregion
 }

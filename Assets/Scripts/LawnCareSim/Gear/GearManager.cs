@@ -17,6 +17,7 @@ namespace LawnCareSim.Gear
         public static GearManager Instance;
 
         private Transform _gearSpawn;
+        private Transform _workTruckPlayerSpawn;
 
         private void Awake()
         {
@@ -34,6 +35,7 @@ namespace LawnCareSim.Gear
             _inputController.InteractEvent += InteractEventListener;
 
             _gearSpawn = GameObject.Find("GearSpawn").transform;
+            _workTruckPlayerSpawn = GameObject.Find("WorkTruckPlayerSpawn").transform;
 
             CreateDebugGearList();
         }
@@ -167,6 +169,11 @@ namespace LawnCareSim.Gear
             }
 
             return true;
+        }
+
+        public void MovePlayerToTruckSpawn()
+        {
+            EventRelayer.Instance.OnRequestMovePlayer(_workTruckPlayerSpawn);
         }
     }
 
