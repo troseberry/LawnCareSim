@@ -21,7 +21,7 @@ namespace LawnCareSim.Interaction
             if (other.tag == PLAYER_TAG)
             {
                 _isInInteractionZone = true;
-                _eventRelayer.OnEnteredInteractionZone(Prompt);
+                _eventRelayer.OnEnteredInteractionZone(this, Prompt);
             }
         }
 
@@ -30,7 +30,7 @@ namespace LawnCareSim.Interaction
             if (other.tag == PLAYER_TAG)
             {
                 _isInInteractionZone = false;
-                EventRelayer.Instance.OnExitedInteractionZone();
+                EventRelayer.Instance.OnExitedInteractionZone(this);
             }
         }
         #endregion

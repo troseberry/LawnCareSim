@@ -6,6 +6,6 @@
         Invalid = 0,
 
         Tab,
-
+        WorkTruck
     }
 }

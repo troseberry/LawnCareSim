@@ -9,6 +9,7 @@ using UnityEngine;
 //using AnimationState = LawnCareSim.Animation.AnimationState;
 using LawnCareSim.Player;
 using LawnCareSim.Gear;
+using LawnCareSim.Interaction;
 
 namespace LawnCareSim.Events
 {
@@ -72,17 +73,17 @@ namespace LawnCareSim.Events
         #endregion
 
         #region Interaction
-        public EventHandler<string> EnteredInteractionZoneEvent;
-        public EventHandler ExitedInteractionZoneEvent;
+        public EventHandler<(IInteractable, string)> EnteredInteractionZoneEvent;
+        public EventHandler<IInteractable> ExitedInteractionZoneEvent;
 
-        public void OnEnteredInteractionZone(string promptToShow)
+        public void OnEnteredInteractionZone(IInteractable interactable, string promptToShow)
         {
-            EnteredInteractionZoneEvent?.Invoke(this, promptToShow);
+            EnteredInteractionZoneEvent?.Invoke(this, (interactable, promptToShow));
         }
 
-        public void OnExitedInteractionZone()
+        public void OnExitedInteractionZone(IInteractable interactable)
         {
-            ExitedInteractionZoneEvent?.Invoke(this, EventArgs.Empty);
+            ExitedInteractionZoneEvent?.Invoke(this, interactable);
         }
         #endregion
 

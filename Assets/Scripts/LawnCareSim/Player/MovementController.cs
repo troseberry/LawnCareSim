@@ -2,6 +2,7 @@
 using LawnCareSim.Events;
 using LawnCareSim.Gear;
 using LawnCareSim.Input;
+using LawnCareSim.UI;
 using System;
 using UnityEngine;
 
@@ -39,12 +40,14 @@ namespace LawnCareSim.Player
 
         private void Start()
         {
+            _currentMoveSpeed = STANDARD_MOVE_SPEED;
             _rigidbody = GetComponent<Rigidbody>();
 
             InputController.Instance.MoveEvent += MoveEventListener;
-            EventRelayer.Instance.GearSwitchedEvent += GearSwitchedEventListener;
 
-            _currentMoveSpeed = STANDARD_MOVE_SPEED;
+            EventRelayer.Instance.GearSwitchedEvent += GearSwitchedEventListener;
+            EventRelayer.Instance.MenuOpenedEvent += MenuOpenedEventListener;
+            EventRelayer.Instance.MenuClosedEvent += MenuClosedEventListener;
         }
 
         #region GUI
@@ -80,6 +83,16 @@ namespace LawnCareSim.Player
         {
             _horizontalInput = args.x;
             _verticalInput = args.y;
+        }
+
+        private void MenuOpenedEventListener(object sender, MenuName menu)
+        {
+            _canMove = false;
+        }
+
+        private void MenuClosedEventListener(object sender, MenuName menu)
+        {
+            _canMove = true;
         }
 
         private void GearSwitchedEventListener(object sender, GearType args)

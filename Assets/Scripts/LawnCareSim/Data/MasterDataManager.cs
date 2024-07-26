@@ -1,4 +1,6 @@
 ﻿using LawnCareSim.Gear;
+using LawnCareSim.Interaction;
+using LawnCareSim.UI;
 using UnityEngine;
 
 namespace LawnCareSim.Data

@@ -1,5 +1,6 @@
 ﻿using Core.Utility;
 using LawnCareSim.Events;
+using LawnCareSim.Interaction;
 using TMPro;
 using UnityEngine;
 
@@ -25,12 +26,12 @@ namespace LawnCareSim.UI
         }
 
         #region Event Listeners
-        private void EnteredInteractionZoneEventListener(object sender, string args)
+        private void EnteredInteractionZoneEventListener(object sender, (IInteractable, string) args)
         {
-            ToggleInteractionPrompt(true, args);
+            ToggleInteractionPrompt(true, args.Item2);
         }
 
-        private void ExitedInteractionZoneEventListener(object sender, System.EventArgs args)
+        private void ExitedInteractionZoneEventListener(object sender, IInteractable args)
         {
             ToggleInteractionPrompt(false);
         }

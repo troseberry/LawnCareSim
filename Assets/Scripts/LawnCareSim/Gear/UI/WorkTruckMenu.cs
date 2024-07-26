@@ -9,7 +9,11 @@ namespace LawnCareSim.Gear
 {
     public class WorkTruckMenu : BaseMenu
     {
+        #region Constants
+        private const int MAX_STATS_COUNT = 4;
+        #endregion
 
+        #region Serialized Vars
         [SerializeField] private GameObject _gearComponentPrefab;
         [SerializeField] private GameObject _gearStatPrefab;
 
@@ -17,11 +21,9 @@ namespace LawnCareSim.Gear
         [SerializeField] private Transform _statsGroup;
         [SerializeField] private Transform _gearGroup;
         [SerializeField] private TextMeshProUGUI _gearNameText;
+        #endregion
 
-        private const int MAX_STATS_COUNT = 4;
-
-        public static WorkTruckMenu Instance;
-
+        #region Private Vars
         private GearManager _gearManager;
 
         private List<GearInfo> _gearData = new List<GearInfo>();
@@ -30,30 +32,13 @@ namespace LawnCareSim.Gear
         private (GameObject, GearUIComponent) _selectedEntry;
 
         private List<GameObject> _statObjects = new List<GameObject>();
+        #endregion
+
+        public static WorkTruckMenu Instance;
 
         private void Awake()
         {
             Instance = this;
-        }
-
-        private void Start()
-        {
-            InitializeMenuView();
-        }
-
-        private void Update()
-        {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.P))
-            {
-                if (_state == Core.UI.MenuState.Closed)
-                {
-                    Open();
-                }
-                else if (_state == Core.UI.MenuState.Open)
-                {
-                    Close();
-                }
-            }
         }
 
         public override void InitializeMenuView()
