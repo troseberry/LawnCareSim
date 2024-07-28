@@ -7,7 +7,7 @@ namespace LawnCareSim.Gear
     {
         private const string GRASS_TAG = "Grass";
 
-        private GrassManager _grassManager;
+        private GrassController _grassManager;
         private DefaultGearUsageInfo _gearData = new DefaultGearUsageInfo(null);
 
         public override GearType GearType => GearType.Striper;
@@ -17,7 +17,7 @@ namespace LawnCareSim.Gear
         #region Unity Methods
         private void Start()
         {
-            _grassManager = GrassManager.Instance;
+            _grassManager = GrassController.Instance;
         }
 
         private void OnTriggerEnter(Collider other)

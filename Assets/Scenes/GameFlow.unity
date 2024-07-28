@@ -123,50 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &133978719
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 133978721}
-  - component: {fileID: 133978720}
-  m_Layer: 0
-  m_Name: ControllerMaster
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &133978720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 133978719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7b59a9665e9da749b39b0429e2376a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &133978721
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 133978719}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &324857379
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,7 +178,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1731693832}
   - component: {fileID: 1731693834}
-  - component: {fileID: 1731693833}
   - component: {fileID: 1731693836}
   - component: {fileID: 1731693837}
   m_Layer: 0
@@ -247,30 +202,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1731693833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1731693830}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 349558246489f384da213e7738f944cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseColor: {r: 0.16862746, g: 0.34509805, b: 0.16078432, a: 1}
-  _darkGrassStripe: {r: 0.11764706, g: 0.24705882, b: 0.10980392, a: 1}
-  _lightGrassStripe: {r: 0.34509805, g: 0.52156866, b: 0.3372549, a: 1}
-  _grassPrefab: {fileID: 4868519555453722995, guid: 4113b4a9d17ce1f48b7e6abcc66ae9dd,
-    type: 3}
-  _grassEdgePrefab: {fileID: 5111519794942474792, guid: e97aeed4b7424f34389a722d60b5fa41,
-    type: 3}
-  _grassClippingsPrefab: {fileID: 5988451089352131493, guid: f89197ff036c27d45bdc8a2891d93b48,
-    type: 3}
-  _grassParent: {fileID: 0}
-  _horizontalRange: {x: -19, y: 20}
-  _verticalRange: {x: -11, y: 13}
 --- !u!114 &1731693834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,4 +245,3 @@ SceneRoots:
   m_Roots:
   - {fileID: 1731693832}
   - {fileID: 324857381}
-  - {fileID: 133978721}

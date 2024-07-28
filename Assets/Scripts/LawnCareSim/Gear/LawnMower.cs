@@ -14,7 +14,7 @@ namespace LawnCareSim.Gear
         private const float CUT_HEIGHT_MIN = 0.1f;
         private const float CUT_HEIGHT_MAX = 1.0f;
 
-        private GrassManager _grassManager;
+        private GrassController _grassManager;
         private float _cutHeight = 0.5f;
         private DefaultGearUsageInfo _gearData = new DefaultGearUsageInfo(null);
 
@@ -23,7 +23,7 @@ namespace LawnCareSim.Gear
         #region Unity Methods
         private void Start()
         {
-            _grassManager = GrassManager.Instance;
+            _grassManager = GrassController.Instance;
             InputController.Instance.AdjustedCutHeightEvent += AdjustedCutHeightEventListener;
         }
 
