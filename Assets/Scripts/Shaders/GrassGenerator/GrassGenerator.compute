@@ -1,0 +1,70 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+/*
+struct DrawVertex
+{
+    float3 position;
+    float2 uv;
+}
+*/
+
+struct DrawCube
+{
+    float3 Position; // where vertex 0 is located? or cube center
+    //DrawVertex vertices[8]
+};
+
+//float _genCubeHeight;
+float _genCubeWidthLength;  // must be less than 1 to show spacing in blades
+
+float2 _gridSize;
+float _gridStartX;
+float _gridStartZ;
+
+int _allowedBladesX;
+int _allowedBladesZ;
+int _totalBlades;
+
+// divide grid size.x and grid size.y by cube width length to get number of blades allowed in x and z axes
+
+//StructuredBuffer<DrawVertex> _sourceCubeMeshData;
+
+//AppendStructuredBuffer<DrawCube> _drawCubes;
+RWStructuredBuffer<float3> _drawCubes;
+
+[numthreads(128, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // might check if larger than allowed blades count
+    if ((int)id.x >= _totalBlades)
+    {
+        return;
+    }
+    
+
+
+    float startX = _gridStartX;
+    float startZ = _gridStartZ;
+    int currentIndex = 0;
+    
+    for (int i = 0; i < _allowedBladesX; i++)
+    {
+        for (int j = 0; j < _allowedBladesZ; j++)
+        {
+            /*
+            DrawCube cube;
+            cube.Position = float3(startX * i + 0.5f, 1, startZ * j + 0.5f);
+
+            _drawCubes.Append(cube);
+            */
+            
+            _drawCubes[currentIndex] = float3(startX, 1, startZ);
+
+            startZ += _genCubeWidthLength + 2 *_genCubeWidthLength;
+            currentIndex++;
+        }
+        startX += _genCubeWidthLength + 2 *_genCubeWidthLength;
+        startZ = _gridStartZ;
+    }
+}

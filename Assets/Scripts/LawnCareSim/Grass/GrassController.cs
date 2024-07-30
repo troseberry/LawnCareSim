@@ -201,7 +201,7 @@ namespace LawnCareSim.Grass
             _grass.Clear();
             _grassEdges.Clear();
 
-            
+            // TO-DO: need to set random grass height for grass on spawn. or take it from job template data
 
             if (_currentLawn == null)
             {

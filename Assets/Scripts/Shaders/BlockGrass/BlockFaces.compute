@@ -1,0 +1,112 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+#include "NMGPyramidComputeHelpers.hlsl"
+
+// A vertex on the source mesh
+struct SourceVertex
+{
+    float3 positionOS;  // position in object space
+    float2 uv;          // UV
+};
+
+// A vertex on the generated mesh
+struct DrawVertex
+{
+    float3 positionWS;  // position in world space
+    float2 uv;          // UV
+};
+
+struct DrawTriangle
+{
+    float3 normalWS;    // normal in world space. All points share this normal
+    DrawVertex vertices[3];
+};
+
+//Compute buffers
+StructuredBuffer<SourceVertex> _sourceVertices;
+StructuredBuffer<int> _sourceTriangles;
+AppendStructuredBuffer<DrawTriangle> _drawTriangles;
+
+// Vars to be set by renderer script
+int _numSourceTriangles;
+float _blockHeight;
+float4x4 _localToWorld;
+
+DrawVertex TransformToWorldSpace(SourceVertex vertex)
+{
+    DrawVertex output;
+    output.positionWS = mul(_localToWorld, float4(vertex.positionOS, 1)).xyz;
+    output.uv = vertex.uv;
+
+    return output;
+}
+
+void SetupAndOutputTriangle(DrawVertex a, DrawVertex b, DrawVertex c)
+{
+    // Since we extrude the center face, the normal must be recalculated
+    float3 normalWS = GetNormalFromTriangle(a.positionWS, b.positionWS, c.positionWS);
+
+    // Create a DrawTriangle from the three points
+    DrawTriangle tri;
+    tri.normalWS = normalWS;
+    tri.vertices[0] = a;
+    tri.vertices[1] = b;
+    tri.vertices[2] = c;
+
+    // Add the ouput tri to the output buffer
+    _drawTriangles.Append(tri);
+}
+
+[numthreads(128, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // Dispatches can only be in chunks of 128. If there are more threads than
+    // needed for number of triangles, return;
+    if ((int)id.x >= _numSourceTriangles)
+    {
+        return;
+    }
+
+    // Get verties that make up this triangle
+    // The triangle array contains indices to the vertex array
+    // Three values in the triangle array describe one triangle in the source mesh
+    int triStart = id.x * 3;
+    DrawVertex inputs[3];
+    inputs[0] = TransformToWorldSpace(_sourceVertices[_sourceTriangles[triStart]]);
+    inputs[1] = TransformToWorldSpace(_sourceVertices[_sourceTriangles[triStart + 1]]);
+    inputs[2] = TransformToWorldSpace(_sourceVertices[_sourceTriangles[triStart + 2]]);
+
+/*
+    DrawVertex center;
+    // Get triangle normal to extrude center point
+    float3 triNormal = GetNormalFromTriangle(inputs[0].positionWS, inputs[1].positionWS, inputs[2].positionWS);
+    // Find the center position and extrude by _pyramidHeight along the normal
+    center.positionWS = GetTriangleCenter(inputs[0].positionWS, inputs[1].positionWS, inputs[2].positionWS) + triNormal * _blockHeight;
+    // Average the UVs
+    center.uv = GetTriangleCenter(inputs[0].uv, inputs[1].uv, inputs[2].uv);
+
+    // Create the three triangles
+    // Triangles must win clockwise or they will not render by default
+    SetupAndOutputTriangle(inputs[0], inputs[1], center);
+    SetupAndOutputTriangle(inputs[1], inputs[2], center);
+    SetupAndOutputTriangle(inputs[2], inputs[0], center);
+*/
+
+    DrawVertex upper01;
+    float3 triNormal = GetNormalFromTriangle(inputs[0].positionWS, inputs[1].positionWS, inputs[2].positionWS);
+    upper01.positionWS = inputs[0].positionWS + triNormal * _blockHeight;
+    upper01.uv = inputs[0].uv;
+
+    SetupAndOutputTriangle(inputs[0], inputs[1], upper01);
+    SetupAndOutputTriangle(inputs[1], inputs[2], upper01);
+    SetupAndOutputTriangle(inputs[2], inputs[0], upper01);
+
+    DrawVertex upper02;
+    upper02.positionWS = inputs[2].positionWS + triNormal * _blockHeight;
+    upper02.uv = inputs[2].uv;
+
+    SetupAndOutputTriangle(inputs[0], inputs[1], upper02);
+    SetupAndOutputTriangle(inputs[1], inputs[2], upper02);
+    SetupAndOutputTriangle(inputs[2], inputs[0], upper02);
+}
