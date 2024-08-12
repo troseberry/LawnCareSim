@@ -1,22 +1,21 @@
+/*
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
-/*
-struct DrawVertex
+struct CubeVertex
 {
-    float3 position;
-    float2 uv;
-}
-*/
+    float3 OffsetPosition;
+    float2 UV;
+};
 
 struct DrawCube
 {
-    float3 Position; // where vertex 0 is located? or cube center
-    //DrawVertex vertices[8]
+    float3 Origin; // cube center
+    CubeVertex Vertices[8];
 };
 
-//float _genCubeHeight;
-float _genCubeWidthLength;  // must be less than 1 to show spacing in blades
+float _genCubeHeight;
+float _genCubeWidthLength;  // must be less than 1 to show spacing in blades?
 
 float2 _gridSize;
 float _gridStartX;
@@ -31,7 +30,44 @@ int _totalBlades;
 //StructuredBuffer<DrawVertex> _sourceCubeMeshData;
 
 //AppendStructuredBuffer<DrawCube> _drawCubes;
-RWStructuredBuffer<float3> _drawCubes;
+//RWStructuredBuffer<float3> _drawCubes;
+RWStructuredBuffer<DrawCube> _drawCubes;
+
+DrawCube SetupDrawCube(float3 pos)
+{
+    DrawCube cube;
+    cube.Origin = pos;
+    
+    float wL = _genCubeWidthLength / 2;
+    float height = _genCubeHeight / 2;
+
+
+    for (int i = 0; i < 8; i++)
+    {
+        CubeVertex newVert;
+        cube.Vertices[i] = newVert;
+    }
+    
+    cube.Vertices[0].OffsetPosition = float3(pos.x - wL, pos.y + height, pos.z + wL);
+    cube.Vertices[1].OffsetPosition = float3(pos.x + wL, pos.y + height, pos.z + wL);
+    cube.Vertices[2].OffsetPosition = float3(pos.x + wL, pos.y + height, pos.z - wL);
+    cube.Vertices[3].OffsetPosition = float3(pos.x - wL, pos.y + height, pos.z - wL);
+    cube.Vertices[4].OffsetPosition = float3(pos.x - wL, pos.y - height, pos.z + wL);
+    cube.Vertices[5].OffsetPosition = float3(pos.x + wL, pos.y - height, pos.z + wL);
+    cube.Vertices[6].OffsetPosition = float3(pos.x + wL, pos.y - height, pos.z - wL);
+    cube.Vertices[7].OffsetPosition = float3(pos.x - wL, pos.y - height, pos.z - wL);
+
+    cube.Vertices[0].UV = float2(0, 1);
+    cube.Vertices[1].UV = float2(1, 1);
+    cube.Vertices[2].UV = float2(1, 0);
+    cube.Vertices[3].UV = float2(0, 0);
+    cube.Vertices[4].UV = float2(0, 1);
+    cube.Vertices[5].UV = float2(1, 1);
+    cube.Vertices[6].UV = float2(1, 0);
+    cube.Vertices[7].UV = float2(0, 0);
+
+    return cube;
+}
 
 [numthreads(128, 1, 1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -42,8 +78,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         return;
     }
     
-
-
     float startX = _gridStartX;
     float startZ = _gridStartZ;
     int currentIndex = 0;
@@ -52,19 +86,196 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     {
         for (int j = 0; j < _allowedBladesZ; j++)
         {
+            //DrawCube cube = SetupDrawCube(float3(startX * i + 0.5f, 1, startZ * j + 0.5f));
+            DrawCube cube = SetupDrawCube(float3(startX, 1, startZ));
+            _drawCubes[currentIndex] = cube;
+
             /*
-            DrawCube cube;
-            cube.Position = float3(startX * i + 0.5f, 1, startZ * j + 0.5f);
-
-            _drawCubes.Append(cube);
-            */
-            
             _drawCubes[currentIndex] = float3(startX, 1, startZ);
-
+            */
+            /*
             startZ += _genCubeWidthLength + 2 *_genCubeWidthLength;
             currentIndex++;
         }
         startX += _genCubeWidthLength + 2 *_genCubeWidthLength;
         startZ = _gridStartZ;
     }
+}
+
+*/
+
+
+//--------------------------------------------------
+// Second Try 
+//--------------------------------------------------
+//#pragma kernel PositionGenerator
+#pragma kernel MeshGenerator
+
+/*
+struct SourceCubeMeshData
+{
+    //DrawTriangle Trianlges[12];
+    float3 Vertices[24];
+    float2 UVs[24];
+    int Triangles[36];
+    float3 Normals[24];
+};
+*/
+
+struct DrawVertex
+{
+    float3 PositionWS;
+    float2 UV;
+};
+
+
+struct DrawTriangle
+{
+    float3 Normal;
+    DrawVertex Vertices[3];
+};
+
+//float3 Vertices[24];
+StructuredBuffer<float3> _sourceCubeVertices;
+//float2 UVs[24];
+StructuredBuffer<float2> _sourceCubeUVs;
+//int Triangles[36];
+StructuredBuffer<int> _sourceCubeTriangles;
+//float3 Normals[24];
+StructuredBuffer<float3> _sourceCubeNormals;
+
+//RWStructuredBuffer<float3> _cubePositions;
+AppendStructuredBuffer<DrawTriangle> _drawTriangles;
+
+int _totalBlades;
+
+float _genCubeWidthLength;  // must be less than 1 to show spacing in blades?
+float _genCubeHeight;
+
+float2 _gridSize;
+float2 _gridStart;
+float _gridSpacing;
+
+float4x4 _localToWorld;
+
+float3 TransformToWorldSpace(float3 positionOS)
+{
+    return mul(_localToWorld, float4(positionOS, 1)).xyz;;
+}
+
+void GenerateMeshDataForPosition(float3 origin)
+{
+    for (uint i = 0; i < _sourceCubeTriangles.Length; i+=3)
+    {
+        int vert01 = _sourceCubeTriangles[i];
+        int vert02 = _sourceCubeTriangles[i + 1];
+        int vert03 = _sourceCubeTriangles[i + 2];
+
+        DrawTriangle tri;
+        tri.Normal = _sourceCubeNormals[_sourceCubeTriangles[i+1]];
+
+        //tri.Vertices[0].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert01]) + origin;
+        //tri.Vertices[1].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert02]) + origin;
+        //tri.Vertices[2].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert03]) + origin;
+
+        tri.Vertices[0].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert01]) * float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength) + origin;
+        tri.Vertices[1].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert02]) * float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength) + origin;
+        tri.Vertices[2].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert03]) * float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength) + origin;
+        
+        //tri.Vertices[0].PositionWS.y *= _genCubeHeight;
+        //tri.Vertices[1].PositionWS.y *= _genCubeHeight;
+        //tri.Vertices[2].PositionWS.y *= _genCubeHeight;
+
+        //tri.Vertices[0].PositionWS *= float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength);
+        //tri.Vertices[1].PositionWS *= float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength);
+        //tri.Vertices[2].PositionWS *= float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength);
+
+        tri.Vertices[0].UV = _sourceCubeUVs[vert01];
+        tri.Vertices[1].UV = _sourceCubeUVs[vert02];
+        tri.Vertices[2].UV = _sourceCubeUVs[vert03];
+
+        _drawTriangles.Append(tri);
+    }
+}
+
+
+int Mod(int input, int div)
+{
+    if (input < div)
+    {
+        return input;
+    }
+
+    if (input == div)
+    {
+        return 0;
+    }
+
+    for (int i = 0; i < input; i++)
+    {
+        int cur = div * i;
+        int next = div * (i + 1);
+
+        if (next < input)
+        {
+            continue;
+        }
+
+        if (input == next)
+        {
+            return 0;
+        }
+
+        return input - cur;
+    }
+
+    return -1;
+}
+
+int Floor(int input, int div)
+{
+    if (input == 0)
+    {
+        return input;
+    }
+
+    if (input == div)
+    {
+        return 1;
+    }
+
+    for (int i = 0; i < input; i++)
+    {
+        int cur = div * i;
+        int next = div * (i + 1);
+
+        if (input == next)
+        {
+            return i + 1;
+        }
+
+        if (input > cur && input < next)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+[numthreads(128, 1, 1)]
+void MeshGenerator (uint3 id : SV_DispatchThreadID)
+{
+    if ((int)id.x >= _totalBlades)
+    {
+        return;
+    }
+
+    float cubeX = Mod(id.x, _gridSize.y) * _genCubeWidthLength;
+    cubeX += _gridSpacing * cubeX;
+
+    float cubeZ = Floor(id.x, _gridSize.y) * _genCubeWidthLength;
+    cubeZ += _gridSpacing * cubeZ;
+
+    GenerateMeshDataForPosition(float3(_gridStart.x + cubeX, 1, _gridStart.y + cubeZ));
 }

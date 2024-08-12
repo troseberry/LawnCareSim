@@ -1,6 +1,6 @@
 // Make sure this file is not included twice
-#ifndef BLOCKFACES_INCLUDED
-#define BLOCKFACES_INCLUDED
+#ifndef BLOCKGRASS_INCLUDED
+#define BLOCKGRASS_INCLUDED
 
 // Inlcude helper functions from URP
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"

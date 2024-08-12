@@ -19,7 +19,7 @@ public class ProceduralBlockRenderer : MonoBehaviour
     [SerializeField] private float _blockHeight = 1;
 
     //[ToolTip("Whether the block should cast shadows")]
-    [SerializeField] private float _animationFrequency = 1;
+    //[SerializeField] private float _animationFrequency = 1;
 
     // The structure to send to the compute shader
     // The layout kind assures that the data is laid out sequentially
@@ -102,7 +102,7 @@ public class ProceduralBlockRenderer : MonoBehaviour
         _drawBuffer.SetCounterValue(0);     //Set the count to zero
 
         //The data in the args buffer cooresponds to:
-        // 0: vertext count per draw instance. We will onlu use one instance
+        // 0: vertext count per draw instance. We will only use one instance
         // 1: instance count. One
         // 2: start vertex location if using a Graphics buffer
         // 3: start instance location if using a Graphics Buffer
@@ -162,7 +162,7 @@ public class ProceduralBlockRenderer : MonoBehaviour
         _blockComputeShader.Dispatch(_idBlockKernal, _dispatchSize, 1, 1);
 
         // Copy the count (stack size) of the draw buffer to the args buffer, at byte position zero
-        // This sets the vertex coudn for our draw procedural indirect call
+        // This sets the vertex count for our draw procedural indirect call
         ComputeBuffer.CopyCount(_drawBuffer, _argsBuffer, 0);
 
         // This is the compute shader outputs triangles, but the grpahics shader needs the number of vertices,
