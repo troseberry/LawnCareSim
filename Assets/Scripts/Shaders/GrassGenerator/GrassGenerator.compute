@@ -133,16 +133,16 @@ struct DrawTriangle
 {
     float3 Normal;
     DrawVertex Vertices[3];
+    float ColorValue;
 };
 
-//float3 Vertices[24];
 StructuredBuffer<float3> _sourceCubeVertices;
-//float2 UVs[24];
 StructuredBuffer<float2> _sourceCubeUVs;
-//int Triangles[36];
 StructuredBuffer<int> _sourceCubeTriangles;
-//float3 Normals[24];
 StructuredBuffer<float3> _sourceCubeNormals;
+
+StructuredBuffer<float2> _bladeRandomPositionJitters;
+StructuredBuffer<float> _bladeRandomColors;
 
 //RWStructuredBuffer<float3> _cubePositions;
 AppendStructuredBuffer<DrawTriangle> _drawTriangles;
@@ -158,13 +158,20 @@ float _gridSpacing;
 
 float4x4 _localToWorld;
 
+
+// Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
+
+
 float3 TransformToWorldSpace(float3 positionOS)
 {
     return mul(_localToWorld, float4(positionOS, 1)).xyz;;
 }
 
-void GenerateMeshDataForPosition(float3 origin)
+void GenerateMeshDataForPosition(float3 origin, int index)
 {
+    float randomXOffset = _bladeRandomPositionJitters[index].x;
+    float randomZOffset = _bladeRandomPositionJitters[index].y;
+
     for (uint i = 0; i < _sourceCubeTriangles.Length; i+=3)
     {
         int vert01 = _sourceCubeTriangles[i];
@@ -182,6 +189,10 @@ void GenerateMeshDataForPosition(float3 origin)
         tri.Vertices[1].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert02]) * float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength) + origin;
         tri.Vertices[2].PositionWS = TransformToWorldSpace(_sourceCubeVertices[vert03]) * float3(_genCubeWidthLength, _genCubeHeight, _genCubeWidthLength) + origin;
         
+        tri.Vertices[0].PositionWS += float3(randomXOffset, 0, randomZOffset);
+        tri.Vertices[1].PositionWS += float3(randomXOffset, 0, randomZOffset);
+        tri.Vertices[2].PositionWS += float3(randomXOffset, 0, randomZOffset);
+
         //tri.Vertices[0].PositionWS.y *= _genCubeHeight;
         //tri.Vertices[1].PositionWS.y *= _genCubeHeight;
         //tri.Vertices[2].PositionWS.y *= _genCubeHeight;
@@ -193,6 +204,8 @@ void GenerateMeshDataForPosition(float3 origin)
         tri.Vertices[0].UV = _sourceCubeUVs[vert01];
         tri.Vertices[1].UV = _sourceCubeUVs[vert02];
         tri.Vertices[2].UV = _sourceCubeUVs[vert03];
+
+        tri.ColorValue = _bladeRandomColors[index];
 
         _drawTriangles.Append(tri);
     }
@@ -277,5 +290,5 @@ void MeshGenerator (uint3 id : SV_DispatchThreadID)
     float cubeZ = Floor(id.x, _gridSize.y) * _genCubeWidthLength;
     cubeZ += _gridSpacing * cubeZ;
 
-    GenerateMeshDataForPosition(float3(_gridStart.x + cubeX, 1, _gridStart.y + cubeZ));
+    GenerateMeshDataForPosition(float3(_gridStart.x + cubeX, 1, _gridStart.y + cubeZ), (int)id.x);
 }

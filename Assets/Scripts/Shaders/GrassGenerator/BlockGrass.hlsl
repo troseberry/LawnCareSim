@@ -17,6 +17,7 @@ struct DrawTriangle
 {
     float3 normalWS;    // normal in world space. All points share this normal
     DrawVertex vertices[3];
+    float color;
 };
 
 // The buffer to draw from
@@ -26,9 +27,17 @@ struct VertexOutput
 {
     float3 positionWS       : TEXCOORD0;    // Position in world space
     float3 normalWS         : TEXCOORD1;    // Normal vector in world space
-    float uv                : TEXCOORD2;    // UVs
-    float4 positionCS       : SV_POSITION;  // Positino in clip space
+    float2 uv                : TEXCOORD2;    // UVs
+    float4 positionCS       : SV_POSITION;  // Position in clip space
+    float color             : PSIZE1;
 };
+
+// Properties
+float4 _BaseColor;
+float4 _TipColor;
+float _MinY;
+float _MaxY;
+
 
 // The _MainTex property. The sample and scale/offset vector is also created
 TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex); float4 _MainTex_ST;
@@ -52,6 +61,7 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
     output.uv = TRANSFORM_TEX(input.uv, _MainTex);
     // Apply the shadow caster logic to the CS position
     output.positionCS = CalculatePositionCSWithShadowCasterLogic(input.positionWS, tri.normalWS);
+    output.color = tri.color;
 
     return output;
 }
@@ -70,8 +80,12 @@ float4 Fragment(VertexOutput input) : SV_Target
     lightingInput.viewDirectionWS = GetViewDirectionFromPosition(input.positionWS);
     lightingInput.shadowCoord = CalculateShadowCoord(input.positionWS, input.positionCS);
 
-    float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).rgb;
+    //float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).rgb;
     
+    // Lerp between the base and tip color based on the blade height
+    //float colorLerp = lerp(_MinY, _MaxY, input.positionWS.y);
+    float3 albedo = lerp(_BaseColor.rgb, _TipColor.rgb, input.color);
+
     SurfaceData surfaceInput = (SurfaceData)0;
     surfaceInput.albedo = albedo;
     surfaceInput.specular = 1;

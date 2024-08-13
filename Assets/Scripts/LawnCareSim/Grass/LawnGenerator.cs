@@ -7,28 +7,15 @@ namespace LawnCareSim.Grass
 {
     public class LawnGenerator : MonoBehaviour
     {
-        private struct CubeVertex
-        {
-            public Vector3 OffsetPosition;
-            public Vector2 UV;
-        }
-
-        private struct DrawCube
-        {
-            public Vector3 Origin;
-            public CubeVertex[] Vertices;
-        }
-
         [SerializeField] private Mesh _cubeMesh;
-        [SerializeField] private Transform _cubePrefab;
         [SerializeField] private ComputeShader _grassComputeShader;
         [SerializeField] private ComputeShader _triToVertComputeShader;
+        [SerializeField] private Material _material = default;
         [SerializeField] private float _generatedCubeSize;
         [SerializeField] private float _generatedCubeHeight;
         [SerializeField] private Vector2 _gridSize;
         [SerializeField] private Vector2 _gridStart;
         [SerializeField] private float _spacing;
-        [SerializeField] private Material _material = default;
 
         private ComputeBuffer _drawBuffer;
         private ComputeBuffer _argsBuffer;
@@ -36,14 +23,16 @@ namespace LawnCareSim.Grass
         private ComputeBuffer _sourceMeshUVsBuffer;
         private ComputeBuffer _sourceMeshNormalsBuffer;
         private ComputeBuffer _sourceCubeTrianglesBuffer;
-        private NativeArray<Vector3> _cubePositions;
+        private ComputeBuffer _bladeRandomPositionJittersBuffer;
+        private ComputeBuffer _bladeRandomColorsBuffer;
 
         private int _allowedBladesX;
         private int _allowedBladesZ;
         private int _totalBlades;
+        private Vector2[] _randomPositionJitters;
+        private float[] _randomBladeColors;
 
-        private Transform[] _cubes;
-
+        private bool _dispatched;
         private bool _initialized;
         private int _idMeshGeneratorKernal;
         private int _idTriToVertKernal;
@@ -67,11 +56,19 @@ namespace LawnCareSim.Grass
             _allowedBladesZ = (int)(_gridSize.y / _generatedCubeSize);
             _totalBlades = _allowedBladesX * _allowedBladesZ;
 
+            _randomPositionJitters = new Vector2[_totalBlades];
+            _randomBladeColors = new float[_totalBlades];
+            for (int i = 0; i < _totalBlades; i++)
+            {
+                _randomPositionJitters[i] = new Vector2(Random.Range(0f, _spacing / 4.0f), Random.Range(0f, _spacing / 4.0f));
+                _randomBladeColors[i] = Random.Range(0f, 1.0f);
+            }
+
             CalculateBounds();
 
-            //var sourceMesh = GenerateSourceMesh();
             var sourceMesh = _cubeMesh;
 
+            #region Define Buffers
             _drawBuffer = new ComputeBuffer(_totalBlades * sourceMesh.triangles.Length, DRAW_STRIDE, ComputeBufferType.Append);
             _drawBuffer.SetCounterValue(0);
 
@@ -90,6 +87,14 @@ namespace LawnCareSim.Grass
             _sourceCubeTrianglesBuffer = new ComputeBuffer(_totalBlades * sourceMesh.triangles.Length, sizeof(int));
             _sourceCubeTrianglesBuffer.SetData(sourceMesh.triangles);
 
+            _bladeRandomPositionJittersBuffer = new ComputeBuffer(_totalBlades, sizeof(float) * 2);
+            _bladeRandomPositionJittersBuffer.SetData(_randomPositionJitters);
+
+            _bladeRandomColorsBuffer = new ComputeBuffer(_totalBlades, sizeof(float));
+            _bladeRandomColorsBuffer.SetData(_randomBladeColors);
+            #endregion
+
+            #region Set Shader Values
             _idMeshGeneratorKernal = _grassComputeShader.FindKernel("MeshGenerator");
             _idTriToVertKernal = _triToVertComputeShader.FindKernel("CSMain");
 
@@ -98,6 +103,8 @@ namespace LawnCareSim.Grass
             _grassComputeShader.SetBuffer(_idMeshGeneratorKernal, "_sourceCubeUVs", _sourceMeshUVsBuffer);
             _grassComputeShader.SetBuffer(_idMeshGeneratorKernal, "_sourceCubeNormals", _sourceMeshNormalsBuffer);
             _grassComputeShader.SetBuffer(_idMeshGeneratorKernal, "_sourceCubeTriangles", _sourceCubeTrianglesBuffer);
+            _grassComputeShader.SetBuffer(_idMeshGeneratorKernal, "_bladeRandomPositionJitters", _bladeRandomPositionJittersBuffer);
+            _grassComputeShader.SetBuffer(_idMeshGeneratorKernal, "_bladeRandomColors", _bladeRandomColorsBuffer);
 
             _grassComputeShader.SetFloat("_totalBlades", _totalBlades);
             _grassComputeShader.SetFloat("_genCubeWidthLength", _generatedCubeSize);
@@ -112,8 +119,7 @@ namespace LawnCareSim.Grass
             _triToVertComputeShader.SetBuffer(_idTriToVertKernal, "_indirectArgsBuffer", _argsBuffer);
 
             _material.SetBuffer("_drawTriangles", _drawBuffer);
-
-            //CalculateFunc();
+            #endregion
         }
 
 
@@ -127,6 +133,8 @@ namespace LawnCareSim.Grass
                 _sourceMeshUVsBuffer.Release();
                 _sourceMeshNormalsBuffer.Release();
                 _sourceCubeTrianglesBuffer.Release();
+                _bladeRandomPositionJittersBuffer.Release();
+                _bladeRandomColorsBuffer.Release();
             }
 
             _initialized = false;
@@ -134,6 +142,13 @@ namespace LawnCareSim.Grass
 
         private void LateUpdate()
         {
+            /*
+            if (_dispatched)
+            {
+                return;
+            }
+            */
+
             _drawBuffer.SetCounterValue(0);
 
             _grassComputeShader.SetMatrix("_localToWorld", transform.localToWorldMatrix);
@@ -144,15 +159,9 @@ namespace LawnCareSim.Grass
 
             _triToVertComputeShader.Dispatch(_idTriToVertKernal, 1, 1, 1);
 
-            /*
-           RenderParams rendParams = new RenderParams(_material);
-           rendParams.worldBounds = _localBounds;
-
-           Graphics.RenderPrimitivesIndirect(rendParams, MeshTopology.Triangles, _drawBuffer);
-           */
-
             Graphics.DrawProceduralIndirect(_material, _localBounds, MeshTopology.Triangles, _argsBuffer, 0,
                 null, null, UnityEngine.Rendering.ShadowCastingMode.On, true, gameObject.layer);
+            //_dispatched = true;
         }
 
         private void CalculateBounds()
@@ -162,85 +171,6 @@ namespace LawnCareSim.Grass
             gridCenter.z += _gridSize.y / 2;
             var extents = new Vector3(_gridSize.x, 2.0f, _gridSize.y);
             _localBounds = new Bounds(gridCenter, extents);
-        }
-
-        private void SpawnCubes()
-        {
-            _cubes = new Transform[_totalBlades];
-
-            for (int x = 0, i = 0; x < _allowedBladesX; x++)
-            {
-                for (int z = 0; z < _allowedBladesZ; z++, i++)
-                {
-                    _cubes[i] = Instantiate(_cubePrefab);
-                    _cubes[i].transform.position = _cubePositions[i];
-                    _cubes[i].localScale = new Vector3(_generatedCubeSize, 1.5f, _generatedCubeSize);
-                }
-            }
-        }
-
-        private Mesh GenerateSourceMesh()
-        {
-            Mesh mesh = new Mesh();
-            Vector3 pos = Vector3.zero;
-
-            Vector3[] vertices =
-            {
-                pos,
-                new Vector3(pos.x + 1, pos.y, pos.z),
-                new Vector3(pos.x + 1, pos.y, pos.z - 1),
-                new Vector3(pos.x, pos.y, pos.z - 1),
-                new Vector3(pos.x, pos.y - 1, pos.z),
-                new Vector3(pos.x + 1, pos.y - 1, pos.z),
-                new Vector3(pos.x + 1, pos.y - 1, pos.z - 1),
-                new Vector3(pos.x, pos.y - 1, pos.z - 1)
-            };
-
-            Vector2[] uvs =
-            {
-                new Vector2(0, 1),
-                new Vector2(1, 1),
-                new Vector2(1, 0),
-                new Vector2(0, 0),
-
-                new Vector2(0, 1),
-                new Vector2(1, 1),
-                new Vector2(1, 0),
-                new Vector2(0, 0)
-            };
-
-            int[] triangles =
-            {
-                0, 1, 2,
-                0, 2, 3,
-
-                3, 2, 6,
-                3, 6, 7,
-
-                0, 3, 7,
-                0, 7, 4,
-
-                1, 0, 4,
-                1, 4, 5,
-
-                2, 1, 5,
-                2, 5, 6,
-
-                5, 4, 7,
-                5, 7, 6
-
-            };
-
-            mesh.vertices = vertices;
-            mesh.uv = uvs;
-            mesh.triangles = triangles;
-            //mesh.RecalculateTangents();
-            mesh.RecalculateNormals();
-            //mesh.Optimize();
-
-            Debug.Log($"V: {mesh.vertices.Length} | UVs: {mesh.uv.Length} | N: {mesh.normals.Length} | T:{mesh.triangles.Length}");
-
-            return mesh;
         }
 
         int Mod(int input, int div)
@@ -270,25 +200,6 @@ namespace LawnCareSim.Grass
             }
 
             return -1;
-        }
-
-        private void CalculateFunc()
-        {
-            
-            for (int i = 1; i < _totalBlades + 1; i++)
-            {
-                //var x = i % _gridSize.y;
-                //var y = (i - x) % _gridSize.x;
-
-                //var x = i % _gridSize.x;
-                //var y = Mathf.Floor(i / _gridSize.y);
-
-                //var x = (i - 1) % _gridSize.y;
-                var x = Mod(i, (int)_gridSize.y);
-                var y = Mathf.Floor((i - 1) / _gridSize.y);
-
-                Debug.Log($"({x}, {y})");
-            }
         }
     }
 }

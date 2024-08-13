@@ -4,6 +4,10 @@ Shader "Custom/BlockGrassCompute"
     {
         // Shader properties which are editable in the material
         _MainTex ("Texture", 2D) = "white" {}
+        _BaseColor("Base color", Color) = (0, 0.5, 0, 1) // Color of the lowest layer
+        _TipColor("Tip color", Color) = (0, 1, 0, 1) // Color of the highest layer
+        _MinY("Minimum Y Height", float) = 0
+        _MaxY("Maximum Y Height", float) = 1
     }
     SubShader
     {
