@@ -1,4 +1,6 @@
-﻿using LawnCareSim.Jobs;
+﻿using LawnCareSim.Data;
+using LawnCareSim.Gear;
+using LawnCareSim.Jobs;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,9 +16,11 @@ namespace LawnCareSim.Grass
         public float StripeValue;
     }
 
-    public partial class GrassController : MonoBehaviour
+    public class GrassController : MonoBehaviour
     {
         public static GrassController Instance;
+
+        public bool ShowDebugGUI = true;
 
         #region Serialized Vars
 
@@ -34,36 +38,56 @@ namespace LawnCareSim.Grass
 
         private const string GRASS_CLIPPINGS_TAG = "GrassClippings";
 
-        public JobLayout CurrentJobLayout;
-
-        private bool _spawnInitiated;
-
         private void Awake()
         {
             Instance = this;
         }
 
-        private void Start()
+        private void OnGUI()
         {
-            Instantiate(CurrentJobLayout.HousePrefab, _houseSpawn.position, Quaternion.identity, _houseSpawn);
-            var lawn = Instantiate(CurrentJobLayout.LawnPrefab, _lawnSpawn.position, Quaternion.identity, _lawnSpawn);
-
-            _currentLawn = lawn.GetComponent<LawnData>();
-
-        }
-        private void Update()
-        {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.P))
+            if (!ShowDebugGUI)
             {
-                if (!_spawnInitiated)
+                return;
+            }
+
+            var width = UnityEngine.Camera.main.pixelWidth;
+            var height = UnityEngine.Camera.main.pixelHeight;
+
+            GUIStyle fontStyle = GUI.skin.label;
+            fontStyle.fontSize = 20;
+
+            Rect mainRect = new Rect(width * 0.02f, height * 0.04f, 360, 200);
+            GUI.Box(mainRect, GUIContent.none);
+
+            if (GUI.Button(new Rect(mainRect.x + 20, mainRect.y + 25, 150, 150), "Spawn Layout"))
+            {
+                if (MasterDataManager.Instance.JobDataManager.GetJobLayout("JobLayout_01", out var layout))
                 {
-                    _spawnInitiated = true;
+                    if (_currentLawn != null)
+                    {
+                        Destroy(_houseSpawn.GetChild(0).gameObject);
+                        Destroy(_lawnSpawn.GetChild(0).gameObject);
+                        _currentLawn = null;
+                        ClearAllSpawnedGrass();
+                    }
+
+                    Instantiate(layout.HousePrefab, _houseSpawn.position, Quaternion.identity, _houseSpawn);
+                    var lawn = Instantiate(layout.LawnPrefab, _lawnSpawn.position, Quaternion.identity, _lawnSpawn);
+                    _currentLawn = lawn.GetComponent<LawnData>();
+                }
+            }
+
+            if (GUI.Button(new Rect(mainRect.x + 185, mainRect.y + 25, 150, 150), "Setup Lawn"))
+            {
+                if (_currentLawn != null && !_grassSpawnInitiated)
+                {
+                    _grassSpawnInitiated = true;
                     SetupLawn();
                 }
-
             }
         }
 
+        #region Tool Modification Methods
         #region Mowing
         public bool CutGrass(string grassName, float cutHeight)
         {
@@ -188,10 +212,10 @@ namespace LawnCareSim.Grass
             return Color.Lerp(_darkGrassStripe, _lightGrassStripe, rotationScale);
         }
         #endregion
-    }
+        #endregion
 
-    public partial class GrassController
-    {
+        #region Lawn Management
+        private bool _grassSpawnInitiated;
         private LawnData _currentLawn;
         private Dictionary<string, Grass> _grass = new Dictionary<string, Grass>();
         private Dictionary<string, GameObject> _grassEdges = new Dictionary<string, GameObject>();
@@ -200,8 +224,6 @@ namespace LawnCareSim.Grass
         {
             _grass.Clear();
             _grassEdges.Clear();
-
-            
 
             if (_currentLawn == null)
             {
@@ -220,7 +242,7 @@ namespace LawnCareSim.Grass
         {
             int xScale = (int)area.localScale.x;
             int zScale = (int)area.localScale.z;
-            
+
             float startX = (area.position.x - (xScale / 2));
             if (xScale % 2 == 0) startX += 0.5f;
             float startZ = (area.position.z - (zScale / 2));
@@ -237,7 +259,7 @@ namespace LawnCareSim.Grass
                     #region Grass
                     Vector3 spawn = new Vector3(startX + (i * 1.0f), 0.5f, startZ + (j * 1.0f));
                     Debug.Log(spawn);
-                    
+
                     var grass = Instantiate(_grassPrefab, spawn, Quaternion.identity, _grassParent);
 
                     if (grass == null)
@@ -264,7 +286,7 @@ namespace LawnCareSim.Grass
 
                     #endregion
 
-                    
+
                     #region Grass Edges
                     bool canSpawnEdge = i == 0 || i == startX + xScale || j == 0 || j == startZ + zScale;
                     if (canSpawnEdge && Random.Range(0, 2) == 1)
@@ -307,102 +329,21 @@ namespace LawnCareSim.Grass
 
                     }
                     #endregion
-                    
-                    
+
+
                 }
             }
         }
-    }
 
-    /*
-    #region Debug
-    public partial class GrassController
-    {
-        private Dictionary<string, Grass> _grass = new Dictionary<string, Grass>();
-        private Dictionary<string, GameObject> _grassEdges = new Dictionary<string, GameObject>();
-
-        [SerializeField] private GameObject _grassPrefab;
-        [SerializeField] private GameObject _grassEdgePrefab;
-        [SerializeField] private GameObject _grassClippingsPrefab;
-        [SerializeField] private Transform _grassParent;
-        [SerializeField] private Vector2 _horizontalRange;
-        [SerializeField] private Vector2 _verticalRange;
-
-        private void Start()
+        private void ClearAllSpawnedGrass()
         {
-            //DebugCreateGrassInArea();
-        }
-
-        private void DebugCreateGrassInArea()
-        {
-            int xMin = Mathf.RoundToInt(_horizontalRange.x);
-            int xMax = Mathf.RoundToInt(_horizontalRange.y);
-            int yMin = Mathf.RoundToInt(_verticalRange.x);
-            int yMax = Mathf.RoundToInt(_verticalRange.y);
-            int xRange = xMax - xMin;
-            int yRange = yMax - yMin;
-
-            int grassCount = 0;
-            int grassEdgeCount = 0;
-            for (int i = 0; i < xRange * 2 + 1; i++)
+            foreach (Transform child in _grassParent)
             {
-                for (int j = 0; j < yRange * 2 + 1; j++)
-                {
-                    #region Spawn Grass
-                    Vector3 spawn = new Vector3(xMin + (i * 0.5f), 0.5f, yMin + (j * 0.5f));
-                    var grass = Instantiate(_grassPrefab, spawn, Quaternion.identity, _grassParent);
-                    grass.name = $"Grass_{grassCount}";
-
-                    _grass.Add(grass.name, new Grass
-                    {
-                        GameObject = grass,
-                        GrassRenderer = grass.GetComponentInChildren<MeshRenderer>(),
-                        WasCut = false,
-                        Height = grass.transform.localScale.y,
-                        HasBeenStriped = false,
-                        StripeValue = 0,
-                    }); ;
-                    grassCount++;
-                    #endregion
-
-                    #region Spawn Grass Edge
-                    bool canSpawnEdge = i == 0 || i == xRange * 2 || j == 0 || j == yRange * 2;
-                    if (canSpawnEdge && Random.Range(0, 2) == 1)
-                    {
-                        Vector3 edgeSpawn = spawn;
-                        Quaternion edgeRotation = Quaternion.identity;
-
-                        if (i == 0)
-                        {
-                            edgeSpawn.x -= 1.0f;
-                            edgeRotation = Quaternion.Euler(new Vector3(0f, 180f, 0f));
-                        }
-                        else if (i == xRange * 2)
-                        {
-                            edgeSpawn.x += 1.0f;
-                        }
-                        else if (j == 0)
-                        {
-                            edgeSpawn.z -= 1.0f;
-                            edgeRotation = Quaternion.Euler(new Vector3(0f, 90f, 0f));
-                        }
-                        else if (j == yRange * 2)
-                        {
-                            edgeSpawn.z += 1.0f;
-                            edgeRotation = Quaternion.Euler(new Vector3(0f, 270f, 0f));
-                        }
-
-                        var edge = Instantiate(_grassEdgePrefab, edgeSpawn, edgeRotation, _grassParent);
-                        edge.name = $"GrassEdge_{grassEdgeCount}";
-                        _grassEdges.Add(edge.name, edge);
-
-                        grassEdgeCount++;
-                    }
-                    #endregion
-                }
+                Destroy(child.gameObject);
             }
+
+            _grassSpawnInitiated = false;
         }
+        #endregion
     }
-    #endregion
-    */
 }

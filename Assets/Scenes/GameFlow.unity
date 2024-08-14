@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gearDataManager: {fileID: 11400000, guid: 94017f501e9eae44a8371a4838a2ad5f, type: 2}
+  _jobDataManager: {fileID: 11400000, guid: 3fa37fadd1e92bb4899f36c45ce86bc9, type: 2}
 --- !u!4 &324857381
 Transform:
   m_ObjectHideFlags: 0

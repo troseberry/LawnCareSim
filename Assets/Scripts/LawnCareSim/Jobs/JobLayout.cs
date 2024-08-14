@@ -7,9 +7,10 @@ using UnityEngine;
 
 namespace LawnCareSim.Jobs
 {
-    [CreateAssetMenu(fileName = "JobLayout", menuName = "Jobs/JobLayout")]
-    public class JobLayout : ScriptableObject
+    [Serializable]
+    public struct JobLayout
     {
+        public string JobName;
         public GameObject LawnPrefab;
         public GameObject HousePrefab;
     }
