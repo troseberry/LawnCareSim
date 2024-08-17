@@ -41,6 +41,7 @@ namespace LawnCareSim.Events
         #endregion
 
         #region Camera
+        /*
         public struct CameraBlendData
         {
             public CameraName BlendFromCamera;
@@ -61,6 +62,7 @@ namespace LawnCareSim.Events
             var blendData = new CameraBlendData { BlendFromCamera = blendFromCamera, BlendToCamera = blendToCamera };
             CameraChangeFinishedEvent?.Invoke(this, blendData);
         }
+        */
         #endregion
 
         #region Gear
