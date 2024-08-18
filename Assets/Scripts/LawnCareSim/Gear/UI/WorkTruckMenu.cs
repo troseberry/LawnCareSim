@@ -24,7 +24,7 @@ namespace LawnCareSim.Gear
         #endregion
 
         #region Private Vars
-        private GearManager _gearManager;
+        private OnJobGearManager _gearManager;
 
         private List<GearInfo> _gearData = new List<GearInfo>();
         private List<(GameObject, GearUIComponent)> _gearList = new List<(GameObject, GearUIComponent)>();
@@ -45,7 +45,7 @@ namespace LawnCareSim.Gear
         {
             base.InitializeMenuView();
 
-            _gearManager = GearManager.Instance;
+            _gearManager = OnJobGearManager.Instance;
 
             _detailsGroup.SetActive(false);
         }

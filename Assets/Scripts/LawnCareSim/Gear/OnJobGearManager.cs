@@ -12,9 +12,9 @@ namespace LawnCareSim.Gear
 {
     // TO-DO: maybe rename to TruckGearManager. Anticipating there will be another manager for gear when not on a job. Like in the garage
     // Or keep all gear stuff to one class
-    public partial class GearManager : MonoBehaviour
+    public partial class OnJobGearManager : MonoBehaviour
     {
-        public static GearManager Instance;
+        public static OnJobGearManager Instance;
 
         private Transform _gearSpawn;
         private Transform _workTruckPlayerSpawn;
@@ -51,7 +51,7 @@ namespace LawnCareSim.Gear
         #endregion
     }
 
-    public partial class GearManager : IManager
+    public partial class OnJobGearManager : IManager
     {
         private InputController _inputController;
 
@@ -178,7 +178,7 @@ namespace LawnCareSim.Gear
     }
 
     #region Debug
-    public partial class GearManager
+    public partial class OnJobGearManager
     {
         public bool ShowDebugGUI;
 
