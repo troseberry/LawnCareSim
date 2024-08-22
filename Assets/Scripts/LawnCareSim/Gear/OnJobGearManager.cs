@@ -173,7 +173,7 @@ namespace LawnCareSim.Gear
 
         public void MovePlayerToTruckSpawn()
         {
-            EventRelayer.Instance.OnRequestMovePlayer(_workTruckPlayerSpawn);
+            EventRelayer.Instance.OnMovePlayer(_workTruckPlayerSpawn);
         }
     }
 

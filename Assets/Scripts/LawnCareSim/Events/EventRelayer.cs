@@ -122,13 +122,13 @@ namespace LawnCareSim.Events
         #endregion
 
         #region Movement
-        public event EventHandler<Transform> RequestMovePlayerEvent;
+        public event EventHandler<Transform> MovePlayerEvent;
         public event EventHandler<bool> DisablePlayerControlEvent;
         public event EventHandler<MovementSpeed> MovementSpeedChangedEvent;
 
-        public void OnRequestMovePlayer(Transform transform)
+        public void OnMovePlayer(Transform transform)
         {
-            RequestMovePlayerEvent?.Invoke(this, transform);
+            MovePlayerEvent?.Invoke(this, transform);
         }
 
         public void OnDisablePlayerControl(bool disable)

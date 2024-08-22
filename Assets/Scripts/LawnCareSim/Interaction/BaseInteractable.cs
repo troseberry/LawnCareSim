@@ -55,6 +55,15 @@ namespace LawnCareSim.Interaction
                 return;
             }
         }
+
+        protected void ForceExit()
+        {
+            if (_isInInteractionZone)
+            {
+                _isInInteractionZone = false;
+                EventRelayer.Instance.OnExitedInteractionZone(this);
+            }
+        }
         #endregion
     }
 }

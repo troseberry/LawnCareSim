@@ -49,8 +49,10 @@ namespace LawnCareSim.Player
             EventRelayer.Instance.GearSwitchedEvent += GearSwitchedEventListener;
             EventRelayer.Instance.MenuOpenedEvent += MenuOpenedEventListener;
             EventRelayer.Instance.MenuClosedEvent += MenuClosedEventListener;
-            EventRelayer.Instance.RequestMovePlayerEvent += RequestMovePlayerEventListener;
+            EventRelayer.Instance.MovePlayerEvent += MovePlayerEventListener;
+            EventRelayer.Instance.DisablePlayerControlEvent += DisablePlayerControlEventListener;
         }
+
 
         private void Update()
         {
@@ -68,6 +70,11 @@ namespace LawnCareSim.Player
         {
             _horizontalInput = args.x;
             _verticalInput = args.y;
+        }
+
+        private void DisablePlayerControlEventListener(object sender, bool args)
+        {
+            _canMove = !args;
         }
 
         private void MenuOpenedEventListener(object sender, MenuName menu)
@@ -97,11 +104,10 @@ namespace LawnCareSim.Player
             }
         }
 
-        private void RequestMovePlayerEventListener(object sender, Transform args)
+        private void MovePlayerEventListener(object sender, Transform args)
         {
-            //_characterController.enabled = false;
             transform.position = args.position;
-            //_characterController.enabled = true;
+            transform.rotation = args.rotation;
         }
         #endregion
     }
