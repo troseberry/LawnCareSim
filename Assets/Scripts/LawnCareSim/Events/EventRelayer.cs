@@ -10,6 +10,7 @@ using UnityEngine;
 using LawnCareSim.Player;
 using LawnCareSim.Gear;
 using LawnCareSim.Interaction;
+using LawnCareSim.Jobs;
 
 namespace LawnCareSim.Events
 {
@@ -98,6 +99,27 @@ namespace LawnCareSim.Events
             ItemAddedEvent?.Invoke(this, added);
         }
         */
+        #endregion
+
+        #region Job
+        public event EventHandler<Job> JobCreatedEvent;
+        public event EventHandler<Job> LawnGeneratedEvent;
+        public event EventHandler<Job> JobTasksCreatedEvent;
+
+        public void OnJobCreated(Job job)
+        {
+            JobCreatedEvent?.Invoke(this, job);
+        }
+
+        public void OnLawnGenerated(Job job)
+        {
+            LawnGeneratedEvent?.Invoke(this, job);
+        }
+
+        public void OnJobTasksCreatedEvent(Job job)
+        {
+            JobTasksCreatedEvent?.Invoke(this, job);
+        }
         #endregion
 
         #region Menus

@@ -1,7 +1,9 @@
 ﻿using LawnCareSim.Data;
+using LawnCareSim.Events;
 using LawnCareSim.Gear;
 using LawnCareSim.Jobs;
 using System.Collections.Generic;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace LawnCareSim.Grass
@@ -43,6 +45,22 @@ namespace LawnCareSim.Grass
             Instance = this;
         }
 
+        private void Start()
+        {
+            EventRelayer.Instance.JobCreatedEvent += JobDataGeneratedEventListener;
+        }
+
+        private void JobDataGeneratedEventListener(object sender, Job job)
+        {
+            if (job == null)
+            {
+                return;
+            }
+
+            StartJob(job);
+        }
+
+        /*
         private void OnGUI()
         {
             if (!ShowDebugGUI)
@@ -86,6 +104,35 @@ namespace LawnCareSim.Grass
                 }
             }
         }
+        */
+
+        #region Setup
+        private void StartJob(Job job)
+        {
+            var refJob = job;
+            if (_currentLawn != null)
+            {
+                Destroy(_houseSpawn.GetChild(0).gameObject);
+                Destroy(_lawnSpawn.GetChild(0).gameObject);
+                _currentLawn = null;
+                ClearAllSpawnedGrass();
+            }
+
+            Instantiate(refJob.Layout.HousePrefab, _houseSpawn.position, Quaternion.identity, _houseSpawn);
+            var lawn = Instantiate(refJob.Layout.LawnPrefab, _lawnSpawn.position, Quaternion.identity, _lawnSpawn);
+            _currentLawn = lawn.GetComponent<LawnData>();
+
+            if (_currentLawn != null && !_grassSpawnInitiated)
+            {
+                _grassSpawnInitiated = true;
+                var count = SetupLawn();
+                refJob.GrassArea = count.Item1;
+                refJob.Edges = count.Item2;
+            }
+
+            EventRelayer.Instance.OnLawnGenerated(refJob);
+        }
+        #endregion
 
         #region Tool Modification Methods
         #region Mowing
@@ -220,25 +267,31 @@ namespace LawnCareSim.Grass
         private Dictionary<string, Grass> _grass = new Dictionary<string, Grass>();
         private Dictionary<string, GameObject> _grassEdges = new Dictionary<string, GameObject>();
 
-        public void SetupLawn()
+        public (int, int) SetupLawn()
         {
             _grass.Clear();
             _grassEdges.Clear();
 
             if (_currentLawn == null)
             {
-                return;
+                return (-1, -1);
             }
 
-            Debug.Log($"SetupLawn - {_currentLawn.GrassAreas.Count}");
+            //Debug.Log($"SetupLawn - {_currentLawn.GrassAreas.Count}");
 
+            int grassCount = 0;
+            int edgeCount = 0;
             foreach (var area in _currentLawn.GrassAreas)
             {
-                SpawnGrassInArea(area);
+                var grass = SpawnGrassInArea(area);
+                grassCount += grass.Item1;
+                edgeCount += grass.Item2;
             }
+
+            return (grassCount, edgeCount);
         }
 
-        private void SpawnGrassInArea(Transform area)
+        private (int, int) SpawnGrassInArea(Transform area)
         {
             int xScale = (int)area.localScale.x;
             int zScale = (int)area.localScale.z;
@@ -248,7 +301,7 @@ namespace LawnCareSim.Grass
             float startZ = (area.position.z - (zScale / 2));
             if (zScale % 2 == 0) startZ += 0.5f;
 
-            Debug.Log($"[SpawnGrassInArea] - Size {xScale}, {zScale} | Start {startX}, {zScale}");
+            //Debug.Log($"[SpawnGrassInArea] - Size {xScale}, {zScale} | Start {startX}, {zScale}");
 
             int grassCount = 0;
             int grassEdgeCount = 0;
@@ -258,7 +311,6 @@ namespace LawnCareSim.Grass
                 {
                     #region Grass
                     Vector3 spawn = new Vector3(startX + (i * 1.0f), 0.5f, startZ + (j * 1.0f));
-                    Debug.Log(spawn);
 
                     var grass = Instantiate(_grassPrefab, spawn, Quaternion.identity, _grassParent);
 
@@ -333,6 +385,8 @@ namespace LawnCareSim.Grass
 
                 }
             }
+
+            return (grassCount, grassEdgeCount);
         }
 
         private void ClearAllSpawnedGrass()

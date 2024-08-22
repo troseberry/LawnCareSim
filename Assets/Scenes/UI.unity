@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000006, guid: 9e5b077c3133bf14facadba4a27b723d,
+  m_LightingDataAsset: {fileID: 112000006, guid: e8d013b6eadf1c44eb22f3056a00a664,
     type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
