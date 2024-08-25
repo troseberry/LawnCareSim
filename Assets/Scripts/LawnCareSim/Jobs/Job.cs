@@ -1,5 +1,6 @@
 ﻿
 
+using LawnCareSim.Events;
 using System;
 using System.Collections.Generic;
 
@@ -67,8 +68,9 @@ namespace LawnCareSim.Jobs
             return _tasks.TryGetValue(type, out task);
         }
 
-        internal bool ProgressTask(JobTaskType type)
+        internal bool ProgressTask(JobTaskType type, out JobTask returnTask)
         {
+            returnTask = null;
             if (!GetTaskForType(type, out var foundTask))
             {
                 return false;
@@ -79,15 +81,17 @@ namespace LawnCareSim.Jobs
                 return false;
             }
 
-            // update total progress
-            float total = 0;
+            returnTask = foundTask;
 
+
+            float total = 0;
             foreach(var task in _tasks)
             {
                 total += task.Value.Progress;
             }
 
             _totalProgress = total / _tasks.Count;
+
 
             return true;
         }

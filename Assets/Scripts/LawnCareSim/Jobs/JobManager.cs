@@ -16,6 +16,18 @@ namespace LawnCareSim.Jobs
         private Dictionary<Guid, Job> _jobsMap;
         private Job _activeJob;
 
+        public Job ActiveJob
+        {
+            get => _activeJob;
+            private set
+            {
+                _activeJob = value;
+                if (value != null)
+                {
+                    EventRelayer.Instance.OnActiveJobSetEvent(_activeJob);
+                }
+            }
+        }
 
         private void Awake()
         {
@@ -47,7 +59,7 @@ namespace LawnCareSim.Jobs
             {
                 if (MasterDataManager.Instance.JobDataManager.GetJobLayout("JobLayout_01", out var layout))
                 {
-                    _activeJob = CreateJobForLayout(1, layout);
+                    ActiveJob = CreateJobForLayout(1, layout);
                 }
             }
         }
@@ -96,27 +108,30 @@ namespace LawnCareSim.Jobs
         }
 
 
-        private void GrassCutEventListener(object sender, EventArgs e)
+        private void GrassCutEventListener(object sender, EventArgs args)
         {
-            if (_activeJob.ProgressTask(JobTaskType.CutGrass))
+            if (_activeJob.ProgressTask(JobTaskType.CutGrass, out var task))
             {
                 EventRelayer.Instance.OnActiveJobProgressed(_activeJob);
+                EventRelayer.Instance.OnActiveJobTaskProgressed(task);
             }
         }
 
         private void GrassEdgedEventListener(object sender, EventArgs args)
         {
-            if (_activeJob.ProgressTask(JobTaskType.EdgeGrass))
+            if (_activeJob.ProgressTask(JobTaskType.EdgeGrass, out var task))
             {
                 EventRelayer.Instance.OnActiveJobProgressed(_activeJob);
+                EventRelayer.Instance.OnActiveJobTaskProgressed(task);
             }
         }
 
         private void GrassStripedEventListener(object sender, EventArgs args)
         {
-            if (_activeJob.ProgressTask(JobTaskType.StripeGrass))
+            if (_activeJob.ProgressTask(JobTaskType.StripeGrass, out var task))
             {
                 EventRelayer.Instance.OnActiveJobProgressed(_activeJob);
+                EventRelayer.Instance.OnActiveJobTaskProgressed(task);
             }
         }
         #endregion
