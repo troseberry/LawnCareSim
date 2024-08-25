@@ -13,7 +13,8 @@ namespace LawnCareSim.Jobs
 
         private int _grassArea;
         private int _edges;
-        private List<JobTask> _tasks;
+        private float _totalProgress;
+        private Dictionary<JobTaskType, JobTask> _tasks;
 
         public Guid Guid => _guid;
         public int Difficulty => _difficulty;
@@ -32,7 +33,12 @@ namespace LawnCareSim.Jobs
             set => _edges = value;
         }
 
-        public List<JobTask> Tasks
+        public float TotalProgress
+        {
+            get => _totalProgress;
+        }
+
+        public Dictionary<JobTaskType, JobTask> Tasks
         {
             get => _tasks;
             set
@@ -50,6 +56,40 @@ namespace LawnCareSim.Jobs
 
             _difficulty = difficulty;
             _layout = layout;
+
+            _totalProgress = 0f;
+        }
+
+        private bool GetTaskForType(JobTaskType type, out JobTask task)
+        {
+            task = null;
+
+            return _tasks.TryGetValue(type, out task);
+        }
+
+        internal bool ProgressTask(JobTaskType type)
+        {
+            if (!GetTaskForType(type, out var foundTask))
+            {
+                return false;
+            }
+
+            if (!foundTask.ProgressTask())
+            {
+                return false;
+            }
+
+            // update total progress
+            float total = 0;
+
+            foreach(var task in _tasks)
+            {
+                total += task.Value.Progress;
+            }
+
+            _totalProgress = total / _tasks.Count;
+
+            return true;
         }
     }
 }

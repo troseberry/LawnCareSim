@@ -14,6 +14,7 @@ namespace LawnCareSim.Jobs
         public bool ShowDebugGUI;
 
         private Dictionary<Guid, Job> _jobsMap;
+        private Job _activeJob;
 
 
         private void Awake()
@@ -46,7 +47,7 @@ namespace LawnCareSim.Jobs
             {
                 if (MasterDataManager.Instance.JobDataManager.GetJobLayout("JobLayout_01", out var layout))
                 {
-                    CreateJobForLayout(1, layout);
+                    _activeJob = CreateJobForLayout(1, layout);
                 }
             }
         }
@@ -56,28 +57,32 @@ namespace LawnCareSim.Jobs
             _jobsMap = new Dictionary<Guid, Job>();
 
             EventRelayer.Instance.LawnGeneratedEvent += LawnGeneratedEventListener;
+            EventRelayer.Instance.GrassCutEvent += GrassCutEventListener;
+            EventRelayer.Instance.GrassEdgedEvent += GrassEdgedEventListener;
+            EventRelayer.Instance.GrassStripedEvent += GrassStripedEventListener;
         }
 
+        #region Event Listeners
         private void LawnGeneratedEventListener(object sender, Job job)
         {
             if (_jobsMap.ContainsKey(job.Guid))
             {
                 var modJob = job;
-                modJob.Tasks = new List<JobTask>();
+                modJob.Tasks = new Dictionary<JobTaskType, JobTask>();
 
                 if (modJob.Difficulty >= 1)
                 {
-                    modJob.Tasks.Add(new JobTask(JobTaskType.CutGrass, modJob.GrassArea));
+                    modJob.Tasks.Add(JobTaskType.CutGrass, new JobTask(JobTaskType.CutGrass, modJob.GrassArea));
                 }
 
                 if (modJob.Difficulty >= 2)
                 {
-                    modJob.Tasks.Add(new JobTask(JobTaskType.EdgeYard, modJob.Edges));
+                    modJob.Tasks.Add(JobTaskType.EdgeGrass, new JobTask(JobTaskType.EdgeGrass, modJob.Edges));
                 }
 
                 if (modJob.Difficulty >= 3)
                 {
-                    modJob.Tasks.Add(new JobTask(JobTaskType.StripeGrass, modJob.GrassArea));
+                    modJob.Tasks.Add(JobTaskType.StripeGrass, new JobTask(JobTaskType.StripeGrass, modJob.GrassArea));
                 }
 
                 _jobsMap[job.Guid] = modJob;
@@ -90,13 +95,41 @@ namespace LawnCareSim.Jobs
             }
         }
 
+
+        private void GrassCutEventListener(object sender, EventArgs e)
+        {
+            if (_activeJob.ProgressTask(JobTaskType.CutGrass))
+            {
+                EventRelayer.Instance.OnActiveJobProgressed(_activeJob);
+            }
+        }
+
+        private void GrassEdgedEventListener(object sender, EventArgs args)
+        {
+            if (_activeJob.ProgressTask(JobTaskType.EdgeGrass))
+            {
+                EventRelayer.Instance.OnActiveJobProgressed(_activeJob);
+            }
+        }
+
+        private void GrassStripedEventListener(object sender, EventArgs args)
+        {
+            if (_activeJob.ProgressTask(JobTaskType.StripeGrass))
+            {
+                EventRelayer.Instance.OnActiveJobProgressed(_activeJob);
+            }
+        }
+        #endregion
+
         // Job menu is populated with images of the layouts with random difficulties. On load into scene create the job here
-        private void CreateJobForLayout(int difficulty, JobLayout layout)
+        private Job CreateJobForLayout(int difficulty, JobLayout layout)
         {
             Job newJob = new Job(difficulty, layout);
             _jobsMap.Add(newJob.Guid, newJob);
 
             EventRelayer.Instance.OnJobCreated(newJob);
+
+            return newJob;
         }
     }
 }

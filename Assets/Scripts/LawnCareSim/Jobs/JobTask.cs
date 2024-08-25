@@ -6,7 +6,7 @@ namespace LawnCareSim.Jobs
         Invalid,
         CutGrass,
         StripeGrass,
-        EdgeYard
+        EdgeGrass
     }
     public class JobTask
     {
@@ -15,7 +15,7 @@ namespace LawnCareSim.Jobs
 
         private int _progressCounter;
 
-        public float Progress => _progressCounter / _instances;
+        public float Progress => (float)_progressCounter / _instances;
 
         public JobTask(JobTaskType type, int instances)
         {
@@ -26,6 +26,17 @@ namespace LawnCareSim.Jobs
         public override string ToString()
         {
             return $"{_type}: {_instances}";
+        }
+
+        public bool ProgressTask()
+        {
+            if (_progressCounter >= _instances)
+            {
+                return false;
+            }
+
+            _progressCounter++;
+            return true;
         }
     }
 }

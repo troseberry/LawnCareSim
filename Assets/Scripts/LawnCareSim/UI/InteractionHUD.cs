@@ -6,17 +6,14 @@ using UnityEngine;
 
 namespace LawnCareSim.UI
 {
-    public class HUD : MonoBehaviour
+    public class InteractionHUD : MonoBehaviour
     {
-        private Canvas _canvas;
-
         [SerializeField] private GameObject _interactionGroup;
         private TextMeshProUGUI _interactPromptText;
 
+
         private void Start()
         {
-            _canvas = GetComponent<Canvas>();
-
             EventRelayer.Instance.EnteredInteractionZoneEvent += EnteredInteractionZoneEventListener;
             EventRelayer.Instance.ExitedInteractionZoneEvent += ExitedInteractionZoneEventListener;
 

@@ -157,6 +157,8 @@ namespace LawnCareSim.Grass
 
                 _grass[grassName] = grass;
 
+                EventRelayer.Instance.OnGrassCut();
+
                 return true;
             }
 
@@ -177,6 +179,8 @@ namespace LawnCareSim.Grass
             grassEdge.tag = GRASS_CLIPPINGS_TAG;
 
             _grassEdges.Remove(edgeName);
+
+            EventRelayer.Instance.OnGrassEdged();
 
             return true;
         }
@@ -211,6 +215,8 @@ namespace LawnCareSim.Grass
             grass.GrassRenderer.material.SetColor("_BaseColor", GetColorForRotation(modRotation));
 
             _grass[grassName] = grass;
+
+            EventRelayer.Instance.OnGrassStriped();
 
             return true;
         }

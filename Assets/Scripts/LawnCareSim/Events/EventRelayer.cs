@@ -75,6 +75,27 @@ namespace LawnCareSim.Events
         }
         #endregion
 
+        #region Grass
+        public event EventHandler GrassCutEvent;
+        public event EventHandler GrassEdgedEvent;
+        public event EventHandler GrassStripedEvent;
+
+        public void OnGrassCut()
+        {
+            GrassCutEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void OnGrassEdged()
+        {
+            GrassEdgedEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void OnGrassStriped()
+        {
+            GrassStripedEvent?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+
         #region Interaction
         public EventHandler<(IInteractable, string)> EnteredInteractionZoneEvent;
         public EventHandler<IInteractable> ExitedInteractionZoneEvent;
@@ -105,6 +126,7 @@ namespace LawnCareSim.Events
         public event EventHandler<Job> JobCreatedEvent;
         public event EventHandler<Job> LawnGeneratedEvent;
         public event EventHandler<Job> JobTasksCreatedEvent;
+        public event EventHandler<Job> ActiveJobProgressedEvent;
 
         public void OnJobCreated(Job job)
         {
@@ -119,6 +141,11 @@ namespace LawnCareSim.Events
         public void OnJobTasksCreatedEvent(Job job)
         {
             JobTasksCreatedEvent?.Invoke(this, job);
+        }
+
+        public void OnActiveJobProgressed(Job job)
+        {
+            ActiveJobProgressedEvent?.Invoke(this, job);
         }
         #endregion
 
