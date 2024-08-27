@@ -187,14 +187,14 @@ namespace LawnCareSim.Player
                 if (direction.x > 0.1f)
                 {
                     _rigidbody.velocity = Vector3.zero;
-                    transform.RotateAround(_rightTurnAxis.transform.position, direction.z * Vector3.up, MOWER_ROTATION_SPEED * Time.deltaTime);
+                    transform.RotateAround(_rightTurnAxis.transform.position, direction.z * Vector3.up, MOWER_ROTATION_SPEED * UnityEngine.Time.deltaTime);
                 }
 
                 // Rotating Right
                 else if (direction.x < -0.1f)
                 {
                     _rigidbody.velocity = Vector3.zero;
-                    transform.RotateAround(_leftTurnAxis.transform.position, direction.z * -Vector3.up, MOWER_ROTATION_SPEED * Time.deltaTime);
+                    transform.RotateAround(_leftTurnAxis.transform.position, direction.z * -Vector3.up, MOWER_ROTATION_SPEED * UnityEngine.Time.deltaTime);
                 }
 
                 // Otherwise move in forward direction

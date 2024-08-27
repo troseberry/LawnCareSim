@@ -2,7 +2,7 @@
 using LawnCareSim.Camera;
 //using LawnCareSim.Inventory;
 //using LawnCareSim.Animation;
-//using LawnCareSim.Time;
+using LawnCareSim.Time;
 using LawnCareSim.UI;
 using System;
 using UnityEngine;
@@ -221,20 +221,39 @@ namespace LawnCareSim.Events
 
         
         #region Time
-        /*
         public event EventHandler<Day> DayChangedEvent;
-        public event EventHandler<int> TimeChangedEvent;
+        public event EventHandler<string> DayInMonthChangedEvent;       // UI only
+        public event EventHandler<TimeOfDay> TimeOfDayChangedEvent;
+        public event EventHandler MonthCycleCompletedEvent;
+        public event EventHandler<int> TimeProgressingActionPerformedEvent;
 
         public void OnDayChanged(Day newDay)
         {
             DayChangedEvent?.Invoke(this, newDay);
         }
 
-        public void OnTimeChanged(int newTime)
+        /// <summary>
+        /// UI Only. Used so HUD can update the date number.
+        /// </summary>
+        public void OnDayInMonthChangedEvent(string newDate)
         {
-            TimeChangedEvent?.Invoke(this, newTime);
+            DayInMonthChangedEvent?.Invoke(this, newDate);
         }
-        */
+
+        public void OnTimeOfDayChanged(TimeOfDay newTime)
+        {
+            TimeOfDayChangedEvent?.Invoke(this, newTime);
+        }
+
+        public void OnMonthCycleCompleted()
+        {
+            MonthCycleCompletedEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void OnTimeProgressingActionPerformed(int timeSegmentsProgressed)
+        {
+            TimeProgressingActionPerformedEvent?.Invoke(this, timeSegmentsProgressed);
+        }
         #endregion
     }
 }
