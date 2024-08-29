@@ -222,6 +222,7 @@ namespace LawnCareSim.UI
             switch (_currentMenuName)
             {
                 case MenuName.WorkTruck:
+                case MenuName.JobBoard:
                     return true;
                 default:
                     return false;
@@ -243,6 +244,9 @@ namespace LawnCareSim.UI
                 {
                     case MenuName.WorkTruck:
                         toAdd = Gear.WorkTruckMenu.Instance;
+                        break;
+                    case MenuName.JobBoard:
+                        toAdd = Jobs.JobBoardMenu.Instance;
                         break;
                     default:
                         break;

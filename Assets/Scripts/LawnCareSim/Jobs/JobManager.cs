@@ -13,8 +13,12 @@ namespace LawnCareSim.Jobs
         public static JobManager Instance;
         public bool ShowDebugGUI;
 
+        private bool _needToGenerateDailyJobs;
+
         private Dictionary<Guid, Job> _jobsMap;
         private Job _activeJob;
+
+        private List<Job> _dailyJobs;
 
         public Job ActiveJob
         {
@@ -72,6 +76,30 @@ namespace LawnCareSim.Jobs
             EventRelayer.Instance.GrassCutEvent += GrassCutEventListener;
             EventRelayer.Instance.GrassEdgedEvent += GrassEdgedEventListener;
             EventRelayer.Instance.GrassStripedEvent += GrassStripedEventListener;
+
+            EventRelayer.Instance.DayChangedEvent += DayChangedEventListener;
+            EventRelayer.Instance.MenuOpenedEvent += MenuOpenedEventListener;
+        }
+
+        private void MenuOpenedEventListener(object sender, LawnCareSim.UI.MenuName menu)
+        {
+            if (menu != LawnCareSim.UI.MenuName.JobBoard)
+            {
+                return;
+            }
+
+            if (_needToGenerateDailyJobs)
+            {
+                GenerateNewDailyJobs();
+            }
+        }
+
+        private void DayChangedEventListener(object sender, Time.Day args)
+        {
+            if (!_needToGenerateDailyJobs)
+            {
+                _needToGenerateDailyJobs = true;
+            }
         }
 
         #region Event Listeners
@@ -145,6 +173,14 @@ namespace LawnCareSim.Jobs
             EventRelayer.Instance.OnJobCreated(newJob);
 
             return newJob;
+        }
+
+        private void GenerateNewDailyJobs()
+        {
+            _dailyJobs = new List<Job>();
+
+
+            _needToGenerateDailyJobs = false;
         }
     }
 }

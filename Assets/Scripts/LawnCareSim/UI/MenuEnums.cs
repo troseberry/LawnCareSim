@@ -6,6 +6,7 @@
         Invalid = 0,
 
         Tab,
-        WorkTruck
+        WorkTruck,
+        JobBoard
     }
 }

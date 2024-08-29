@@ -122,7 +122,7 @@ namespace LawnCareSim.Events
         */
         #endregion
 
-        #region Job
+        #region Jobs
         public event EventHandler<Job> JobCreatedEvent;
         public event EventHandler<Job> LawnGeneratedEvent;
         public event EventHandler<Job> JobTasksCreatedEvent;
