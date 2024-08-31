@@ -2,6 +2,7 @@
 using LawnCareSim.Data;
 using LawnCareSim.Events;
 using LawnCareSim.Grass;
+using LawnCareSim.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,16 +11,20 @@ namespace LawnCareSim.Jobs
 {
     public class JobManager : MonoBehaviour, IManager
     {
+        #region Singleton
         public static JobManager Instance;
-        public bool ShowDebugGUI;
+        #endregion
 
+        #region Private Variables
         private bool _needToGenerateDailyJobs;
 
+        private JobDataManager _jobDataManager;
         private Dictionary<Guid, Job> _jobsMap;
         private Job _activeJob;
-
         private List<Job> _dailyJobs;
+        #endregion
 
+        #region Properties
         public Job ActiveJob
         {
             get => _activeJob;
@@ -33,6 +38,21 @@ namespace LawnCareSim.Jobs
             }
         }
 
+        internal List<Job> DailyJobs
+        {
+            get
+            {
+                if (_needToGenerateDailyJobs)
+                {
+                    GenerateNewDailyJobs();
+                }
+
+                return _dailyJobs;
+            }
+        }
+        #endregion
+
+        #region Unity Methods
         private void Awake()
         {
             Instance = this;
@@ -42,35 +62,14 @@ namespace LawnCareSim.Jobs
         {
             InitializeManager();
         }
+        #endregion
 
-        private void OnGUI()
-        {
-            if (!ShowDebugGUI)
-            {
-                return;
-            }
-
-            var width = UnityEngine.Camera.main.pixelWidth;
-            var height = UnityEngine.Camera.main.pixelHeight;
-
-            GUIStyle fontStyle = GUI.skin.label;
-            fontStyle.fontSize = 20;
-
-            Rect mainRect = new Rect(width * 0.02f, height * 0.04f, 360, 200);
-            GUI.Box(mainRect, GUIContent.none);
-
-            if (GUI.Button(new Rect(mainRect.x + 20, mainRect.y + 25, 150, 150), "Start Job"))
-            {
-                if (MasterDataManager.Instance.JobDataManager.GetJobLayout("JobLayout_01", out var layout))
-                {
-                    ActiveJob = CreateJobForLayout(1, layout);
-                }
-            }
-        }
-
+        #region IManager
         public void InitializeManager()
         {
+            _needToGenerateDailyJobs = true;
             _jobsMap = new Dictionary<Guid, Job>();
+            _jobDataManager = MasterDataManager.Instance.JobDataManager;
 
             EventRelayer.Instance.LawnGeneratedEvent += LawnGeneratedEventListener;
             EventRelayer.Instance.GrassCutEvent += GrassCutEventListener;
@@ -78,22 +77,10 @@ namespace LawnCareSim.Jobs
             EventRelayer.Instance.GrassStripedEvent += GrassStripedEventListener;
 
             EventRelayer.Instance.DayChangedEvent += DayChangedEventListener;
-            EventRelayer.Instance.MenuOpenedEvent += MenuOpenedEventListener;
         }
+        #endregion
 
-        private void MenuOpenedEventListener(object sender, LawnCareSim.UI.MenuName menu)
-        {
-            if (menu != LawnCareSim.UI.MenuName.JobBoard)
-            {
-                return;
-            }
-
-            if (_needToGenerateDailyJobs)
-            {
-                GenerateNewDailyJobs();
-            }
-        }
-
+        #region Event Listeners
         private void DayChangedEventListener(object sender, Time.Day args)
         {
             if (!_needToGenerateDailyJobs)
@@ -101,8 +88,6 @@ namespace LawnCareSim.Jobs
                 _needToGenerateDailyJobs = true;
             }
         }
-
-        #region Event Listeners
         private void LawnGeneratedEventListener(object sender, Job job)
         {
             if (_jobsMap.ContainsKey(job.Guid))
@@ -164,6 +149,7 @@ namespace LawnCareSim.Jobs
         }
         #endregion
 
+        #region Job Methods
         // Job menu is populated with images of the layouts with random difficulties. On load into scene create the job here
         private Job CreateJobForLayout(int difficulty, JobLayout layout)
         {
@@ -179,8 +165,53 @@ namespace LawnCareSim.Jobs
         {
             _dailyJobs = new List<Job>();
 
+            // TO-DO: Should get random layouts
+            _jobDataManager.GetJobLayout("JobLayout_01", out var layout);
+
+            for (int i = 0; i < 5; i++)
+            {
+                var newJob = new Job(UnityEngine.Random.Range(1, 5), layout);
+                _dailyJobs.Add(newJob);
+            }
 
             _needToGenerateDailyJobs = false;
         }
+        #endregion
+
+
+        #region Debug
+        public bool ShowDebugGUI;
+
+        private void OnGUI()
+        {
+            if (!ShowDebugGUI)
+            {
+                return;
+            }
+
+            var width = UnityEngine.Camera.main.pixelWidth;
+            var height = UnityEngine.Camera.main.pixelHeight;
+
+            GUIStyle fontStyle = GUI.skin.label;
+            fontStyle.fontSize = 20;
+
+            Rect mainRect = new Rect(width * 0.02f, height * 0.04f, 360, 200);
+            GUI.Box(mainRect, GUIContent.none);
+
+            if (GUI.Button(new Rect(mainRect.x + 20, mainRect.y + 25, 150, 150), "Start Job"))
+            {
+                if (_jobDataManager.GetJobLayout("JobLayout_01", out var layout))
+                {
+                    ActiveJob = CreateJobForLayout(1, layout);
+                }
+            }
+
+            if (GUI.Button(new Rect(mainRect.x + 200, mainRect.y + 25, 150, 150), "Job Board"))
+            {
+                MenuManager.Instance.ToggleMenu(MenuName.JobBoard);
+            }
+        }
+        #endregion
+
     }
 }

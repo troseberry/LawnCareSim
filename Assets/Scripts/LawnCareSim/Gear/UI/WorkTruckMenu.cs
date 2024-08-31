@@ -79,31 +79,14 @@ namespace LawnCareSim.Gear
                     var entry = (gearGO, gearComp);
                     _gearList.Add(entry);
 
-                    Entry pointerClickEntry = new Entry { eventID = EventTriggerType.PointerClick };
-                    pointerClickEntry.callback.AddListener((data) =>
-                    {
-                        //_selectedEntry.Item2.Outline(false);
-                        //_selectedEntry = entry;
-                        InitiateGearSwitch();
-                    });
-
-                    Entry pointerEnterEntry = new Entry { eventID = EventTriggerType.PointerEnter };
-                    pointerEnterEntry.callback.AddListener((data) =>
+                    gearComp.AddEventListener(EventTriggerType.PointerEnter, (data) =>
                     {
                         _hoveredEntry = entry;
                         ShowDetailsPanel();
                     });
+                    gearComp.AddEventListener(EventTriggerType.PointerExit, (data) => HideDetailsPanel());
+                    gearComp.AddEventListener(EventTriggerType.PointerClick, (data) => InitiateGearSwitch());
 
-                    Entry pointerExitEntry = new Entry { eventID = EventTriggerType.PointerExit };
-                    pointerExitEntry.callback.AddListener((data) =>
-                    {
-                        HideDetailsPanel();
-                    });
-
-                    var triggerComp = gearGO.GetComponent<EventTrigger>();
-                    triggerComp.triggers.Add(pointerClickEntry);
-                    triggerComp.triggers.Add(pointerEnterEntry);
-                    triggerComp.triggers.Add(pointerExitEntry);
                 }
             }
 
