@@ -37,5 +37,18 @@ namespace LawnCareSim.Jobs
             _jobImage.transform.localScale = start ? _hoverScale : _defaultScale;
             _pushPinImage.enabled = !start;
         }
+
+        public override void UpdateInterface()
+        {
+            _difficultyText.text = _backingData.Difficulty.ToString();
+        }
+
+        public override void Clear(bool clearBackingData = false)
+        {
+            base.Clear(clearBackingData);
+
+            _difficultyText.enabled = false;
+            _difficultyText.text = "";
+        }
     }
 }

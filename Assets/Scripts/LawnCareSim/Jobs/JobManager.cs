@@ -120,7 +120,6 @@ namespace LawnCareSim.Jobs
             }
         }
 
-
         private void GrassCutEventListener(object sender, EventArgs args)
         {
             if (_activeJob.ProgressTask(JobTaskType.CutGrass, out var task))
@@ -168,7 +167,7 @@ namespace LawnCareSim.Jobs
             // TO-DO: Should get random layouts
             _jobDataManager.GetJobLayout("JobLayout_01", out var layout);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 15; i++)
             {
                 var newJob = new Job(UnityEngine.Random.Range(1, 5), layout);
                 _dailyJobs.Add(newJob);
