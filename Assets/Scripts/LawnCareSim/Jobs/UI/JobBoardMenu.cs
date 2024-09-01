@@ -12,12 +12,17 @@ namespace LawnCareSim.Jobs
     {
         public static JobBoardMenu Instance;
 
+        #region Constants
+        private const float SELECTION_RATE = 0.01f;
+        #endregion
+
         #region Private Vars
         private bool _refreshJobPosts;
         private List<PotentialJobUIComponent> _potentialJobsList;
         private PotentialJobUIComponent _hoveredEntry;
         private Vector2 _canvasCenter;
         private Vector2 _detailsModalSize;
+        private float _selectProgress = 0f;
         #endregion
 
         #region Serialized Vars
@@ -27,11 +32,39 @@ namespace LawnCareSim.Jobs
         [SerializeField] private TextMeshProUGUI _budgetText;
         [SerializeField] private Transform _difficultyStars;
         [SerializeField] private Transform _gearList;
+        [SerializeField] private Animator _selectProgressRadialAnimator;
         #endregion
 
         private void Awake()
         {
             Instance = this;
+        }
+
+        private void Update()
+        {
+            if (_hoveredEntry != null)
+            {
+                if (UnityEngine.Input.GetMouseButton(0))
+                {
+                    _selectProgress = Mathf.Clamp(_selectProgress + SELECTION_RATE, 0f, 1.0f);
+                }
+                else
+                {
+                   _selectProgress = Mathf.Clamp(_selectProgress - SELECTION_RATE, 0f, 1.0f);
+                }
+
+                _selectProgressRadialAnimator.Play("ProgressRadial", -1, _selectProgress);
+            }
+            else
+            {
+                if (_selectProgress > 0)
+                {
+
+                    _selectProgressRadialAnimator.Play("ProgressRadial", -1, _selectProgress);
+                    _selectProgress = 0;
+                }
+            }
+            
         }
 
         public override void InitializeMenuView()
@@ -43,6 +76,7 @@ namespace LawnCareSim.Jobs
             _canvasCenter = _canvas.renderingDisplaySize / 2;
 
             _jobDetailsModal.gameObject.SetActive(false);
+            //_selectProgressRadialAnimator.Play("TotalProgressRadial", -1, 0);
 
             SetupObjectPool();
 
@@ -81,7 +115,11 @@ namespace LawnCareSim.Jobs
                     _hoveredEntry = uiComp;
                     ShowDetailsPanel();
                 });
-                uiComp.AddEventListener(EventTriggerType.PointerExit, (data) => HideDetailsPanel());
+                uiComp.AddEventListener(EventTriggerType.PointerExit, (data) =>
+                {
+                    HideDetailsPanel();
+                    _hoveredEntry = null;
+                });
 
                 _potentialJobsList.Add(uiComp);
             }

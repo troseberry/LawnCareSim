@@ -81,6 +81,24 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""d010d255-71b1-4442-86a8-be4a250226bf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Decline"",
+                    ""type"": ""Button"",
+                    ""id"": ""b253836a-1803-4912-a1ec-1a82d5d94810"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -158,6 +176,28 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""TabMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1cb5b39a-4a7f-4dd6-83bb-5e86cb6ad8b2"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4b9ac6e9-7191-4590-b306-79859d7e2102"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Decline"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -768,6 +808,8 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         m_MouseKeyboard_Move = m_MouseKeyboard.FindAction("Move", throwIfNotFound: true);
         m_MouseKeyboard_Interact = m_MouseKeyboard.FindAction("Interact", throwIfNotFound: true);
         m_MouseKeyboard_TabMenu = m_MouseKeyboard.FindAction("TabMenu", throwIfNotFound: true);
+        m_MouseKeyboard_Confirm = m_MouseKeyboard.FindAction("Confirm", throwIfNotFound: true);
+        m_MouseKeyboard_Decline = m_MouseKeyboard.FindAction("Decline", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -896,6 +938,8 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
     private readonly InputAction m_MouseKeyboard_Move;
     private readonly InputAction m_MouseKeyboard_Interact;
     private readonly InputAction m_MouseKeyboard_TabMenu;
+    private readonly InputAction m_MouseKeyboard_Confirm;
+    private readonly InputAction m_MouseKeyboard_Decline;
     public struct MouseKeyboardActions
     {
         private @InputMaster m_Wrapper;
@@ -903,6 +947,8 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_MouseKeyboard_Move;
         public InputAction @Interact => m_Wrapper.m_MouseKeyboard_Interact;
         public InputAction @TabMenu => m_Wrapper.m_MouseKeyboard_TabMenu;
+        public InputAction @Confirm => m_Wrapper.m_MouseKeyboard_Confirm;
+        public InputAction @Decline => m_Wrapper.m_MouseKeyboard_Decline;
         public InputActionMap Get() { return m_Wrapper.m_MouseKeyboard; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -921,6 +967,12 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
             @TabMenu.started += instance.OnTabMenu;
             @TabMenu.performed += instance.OnTabMenu;
             @TabMenu.canceled += instance.OnTabMenu;
+            @Confirm.started += instance.OnConfirm;
+            @Confirm.performed += instance.OnConfirm;
+            @Confirm.canceled += instance.OnConfirm;
+            @Decline.started += instance.OnDecline;
+            @Decline.performed += instance.OnDecline;
+            @Decline.canceled += instance.OnDecline;
         }
 
         private void UnregisterCallbacks(IMouseKeyboardActions instance)
@@ -934,6 +986,12 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
             @TabMenu.started -= instance.OnTabMenu;
             @TabMenu.performed -= instance.OnTabMenu;
             @TabMenu.canceled -= instance.OnTabMenu;
+            @Confirm.started -= instance.OnConfirm;
+            @Confirm.performed -= instance.OnConfirm;
+            @Confirm.canceled -= instance.OnConfirm;
+            @Decline.started -= instance.OnDecline;
+            @Decline.performed -= instance.OnDecline;
+            @Decline.canceled -= instance.OnDecline;
         }
 
         public void RemoveCallbacks(IMouseKeyboardActions instance)
@@ -1170,6 +1228,8 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnTabMenu(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
+        void OnDecline(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

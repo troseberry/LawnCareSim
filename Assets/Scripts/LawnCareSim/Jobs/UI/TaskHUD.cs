@@ -23,12 +23,12 @@ namespace LawnCareSim.Jobs
             UIHelpers.SetUpUIElement(transform, ref _totalProgressPercentageText, "TotalProgressPercentageText");
 
             _totalProgressPercentageText.text = "";
-            _totalProgressRadialAnimator.Play("TotalProgressRadial", -1, 0);
+            _totalProgressRadialAnimator.Play("ProgressRadial", -1, 0);
         }
 
         private void ActiveJobSetEventListener(object sender, Job job)
         {
-            _totalProgressRadialAnimator.Play("TotalProgressRadial", -1, job.TotalProgress);
+            _totalProgressRadialAnimator.Play("ProgressRadial", -1, job.TotalProgress);
             _totalProgressPercentageText.text = $"{Mathf.FloorToInt(job.TotalProgress * 100)}";
 
             var jobTasks = job.Tasks.Values.ToArray();
@@ -57,7 +57,7 @@ namespace LawnCareSim.Jobs
 
         private void SetProgress(float progress)
         {
-            _totalProgressRadialAnimator.Play("TotalProgressRadial", -1, progress);
+            _totalProgressRadialAnimator.Play("ProgressRadial", -1, progress);
             _totalProgressPercentageText.text = $"{Mathf.FloorToInt(progress * 100)}";
         }
     }
