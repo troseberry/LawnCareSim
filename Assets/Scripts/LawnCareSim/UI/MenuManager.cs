@@ -42,7 +42,7 @@ namespace LawnCareSim.UI
         #region IManager
         public void InitializeManager()
         {
-            InputController.Instance.EscapeEvent += EscapeEventListener;
+            InputController.Instance.MenuEscapeEvent += EscapeEventListener;
             InputController.Instance.InteractEvent += InteractEventListener;
 
             _interactEventWaitTimer = new Timer(EVENT_WAIT_TIME);
@@ -105,6 +105,7 @@ namespace LawnCareSim.UI
 
                 _currentMenuView.Close();
                 EventRelayer.Instance.OnMenuClosed(_currentMenuName);
+                InputController.Instance.DisableMenuInput(_currentMenuName);
 
                 _currentMenuView = null;
                 _currentMenuName = MenuName.Invalid;
@@ -118,6 +119,7 @@ namespace LawnCareSim.UI
             _waitForInteractEventTimer = true;
 
             EventRelayer.Instance.OnMenuOpened(_currentMenuName);
+            InputController.Instance.EnableMenuInput(_currentMenuName);
         }
 
         public bool ToggleMenu(MenuName name, bool forceCloseExisting = false)
@@ -142,6 +144,7 @@ namespace LawnCareSim.UI
                 _waitForInteractEventTimer = true;
 
                 EventRelayer.Instance.OnMenuOpened(_currentMenuName);
+                InputController.Instance.EnableMenuInput(_currentMenuName);
 
                 return true;
             }
@@ -151,6 +154,7 @@ namespace LawnCareSim.UI
                 {
                     _currentMenuView.Close();
                     EventRelayer.Instance.OnMenuClosed(_currentMenuName);
+                    InputController.Instance.DisableMenuInput(_currentMenuName);
 
                     _currentMenuView = null;
                     _currentMenuName = MenuName.Invalid;
@@ -178,6 +182,7 @@ namespace LawnCareSim.UI
             {
                 _currentMenuView.Close();
                 EventRelayer.Instance.OnMenuClosed(_currentMenuName);
+                InputController.Instance.DisableMenuInput(_currentMenuName);
 
                 _currentMenuView = null;
                 _currentMenuName = MenuName.Invalid;
@@ -194,6 +199,7 @@ namespace LawnCareSim.UI
 
             _currentMenuView.Close();
             EventRelayer.Instance.OnMenuClosed(_currentMenuName);
+            InputController.Instance.DisableMenuInput(_currentMenuName);
 
             _currentMenuView = null;
             _currentMenuName = MenuName.Invalid;

@@ -1,5 +1,7 @@
 ﻿using LawnCareSim.Events;
+using LawnCareSim.Input;
 using LawnCareSim.UI;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -32,6 +34,7 @@ namespace LawnCareSim.Jobs
         [SerializeField] private TextMeshProUGUI _budgetText;
         [SerializeField] private Transform _difficultyStars;
         [SerializeField] private Transform _gearList;
+        [SerializeField] private Transform _selectionGroup;
         [SerializeField] private Animator _selectProgressRadialAnimator;
         #endregion
 
@@ -40,6 +43,7 @@ namespace LawnCareSim.Jobs
             Instance = this;
         }
 
+        /*
         private void Update()
         {
             if (_hoveredEntry != null)
@@ -66,6 +70,7 @@ namespace LawnCareSim.Jobs
             }
             
         }
+        */
 
         public override void InitializeMenuView()
         {
@@ -76,24 +81,42 @@ namespace LawnCareSim.Jobs
             _canvasCenter = _canvas.renderingDisplaySize / 2;
 
             _jobDetailsModal.gameObject.SetActive(false);
-            //_selectProgressRadialAnimator.Play("TotalProgressRadial", -1, 0);
 
             SetupObjectPool();
 
             EventRelayer.Instance.DayChangedEvent += DayChangedEventListener;
+            InputController.Instance.MenuConfirmEvent += MenuConfirmEventListener;
+            InputController.Instance.MenuConfirmCanceledEvent += MenuConfirmCanceledEventListener;
         }
 
+        
+
+        #region Event Listener
         private void DayChangedEventListener(object sender, Time.Day args)
         {
             _refreshJobPosts = true;
         }
 
+        private void MenuConfirmEventListener(object sender, System.EventArgs e)
+        {
+            HandleSelectionUI(true);
+        }
+
+        private void MenuConfirmCanceledEventListener(object sender, System.EventArgs e)
+        {
+            HandleSelectionUI(false);
+        }
+        #endregion
+
+        #region Menu Interface
         public override void Open()
         {
             if (_refreshJobPosts)
             {
                 CreateJobPosts();
             }
+
+            _selectionGroup.gameObject.SetActive(JobManager.Instance.ActiveJob == null);
 
             base.Open();
         }
@@ -103,7 +126,10 @@ namespace LawnCareSim.Jobs
             base.Close();
             _jobDetailsModal.gameObject.SetActive(false);
         }
+        #endregion
 
+        #region UI Management
+        #region Creation
         private void SetupObjectPool()
         {
             _potentialJobsList = new List<PotentialJobUIComponent>();
@@ -119,6 +145,7 @@ namespace LawnCareSim.Jobs
                 {
                     HideDetailsPanel();
                     _hoveredEntry = null;
+                    _selectProgress = 0f;
                 });
 
                 _potentialJobsList.Add(uiComp);
@@ -146,7 +173,9 @@ namespace LawnCareSim.Jobs
 
             _refreshJobPosts = false;
         }
+        #endregion
 
+        #region Details
         private void ShowDetailsPanel()
         {
             Job hoveredJob = (Job)_hoveredEntry.BackingData;
@@ -189,6 +218,68 @@ namespace LawnCareSim.Jobs
         private void HideDetailsPanel()
         {
             _jobDetailsModal.gameObject.SetActive(false);
+        }
+
+        private void HandleSelectionUI(bool start)
+        {
+            if (JobManager.Instance.ActiveJob != null)
+            {
+                return;
+            }
+
+            StopAllCoroutines();
+
+            if (start)
+            {
+                StartCoroutine(ProgressSelectionRadial());
+            }
+            else
+            {
+                StartCoroutine(RegressSelectionRadial());
+            }
+        }
+
+        private IEnumerator ProgressSelectionRadial()
+        {
+            while (_selectProgress < 1.0f)
+            {
+                if (_hoveredEntry == null)
+                {
+                    yield break;
+                }
+
+                _selectProgress = Mathf.Clamp(_selectProgress + SELECTION_RATE, 0f, 1.0f);
+                _selectProgressRadialAnimator.Play("ProgressRadial", -1, _selectProgress);
+
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            OnJobSelected();
+        }
+
+        private IEnumerator RegressSelectionRadial()
+        {
+            while (_selectProgress > 0)
+            {
+                if (_hoveredEntry == null)
+                {
+                    yield break;
+                }
+
+                _selectProgress = Mathf.Clamp(_selectProgress - SELECTION_RATE, 0f, 1.0f);
+                _selectProgressRadialAnimator.Play("ProgressRadial", -1, _selectProgress);
+
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+        #endregion
+        #endregion
+
+        private void OnJobSelected()
+        {
+            Debug.Log($"[JobBoardMenu][OnJobSelected]");
+            _selectionGroup.gameObject.SetActive(false);
+            JobManager.Instance.ActiveJob = (Job)_hoveredEntry.BackingData;
         }
     }
 }

@@ -13,11 +13,15 @@ namespace LawnCareSim.Input
 
         public event EventHandler DebugMenuEvent;
 
-        public event EventHandler EscapeEvent;
+        public event EventHandler MenuEscapeEvent;
+        public event EventHandler MenuConfirmEvent;
+        public event EventHandler MenuConfirmCanceledEvent;
+        public event EventHandler MenuDeclineEvent;
 
         public event EventHandler<Vector2> MoveEvent;
         public event EventHandler InteractEvent;
         public event EventHandler TabMenuEvent;
+
 
         public event EventHandler<float> AdjustedCutHeightEvent;
 
@@ -30,15 +34,20 @@ namespace LawnCareSim.Input
         private void InitInputMaster()
         {
             InputMaster = new InputMaster();
-            InputMaster.General.Enable();
+
             InputMaster.MouseKeyboard.Enable();
             InputMaster.UI.Enable();
             InputMaster.Debug.Enable();
+
+            InputMaster.Menus.Disable();
             InputMaster.Mower.Disable();
 
             InputMaster.Debug.DebugMenu.performed += DebugMenu;
 
-            InputMaster.General.Escape.performed += Escape;
+            InputMaster.Menus.Escape.performed += Escape;
+            InputMaster.Menus.Confirm.performed += ConfirmPerformed;
+            InputMaster.Menus.Confirm.canceled += ConfirmCanceled;
+            InputMaster.Menus.Decline.performed += DeclinePerformed;
 
             InputMaster.MouseKeyboard.Move.performed += Move;
             InputMaster.MouseKeyboard.Interact.performed += Interact;
@@ -47,11 +56,14 @@ namespace LawnCareSim.Input
             InputMaster.Mower.AdjustCutHeight.performed += AdjustCutHeight;
         }
 
+        
         public void EnableMenuInput(MenuName name, bool disableGameInput = true)
         {
+            InputMaster.Menus.Enable();
+
             switch (name)
             {
-                case MenuName.Test:
+                case MenuName.JobBoard:
                     //InputMaster.CraftingMenu.Enable();
                     break;
             }
@@ -64,6 +76,8 @@ namespace LawnCareSim.Input
 
         public void DisableMenuInput(MenuName name, bool enableGameInput = true)
         {
+            InputMaster.Menus.Disable();
+
             switch (name)
             {
                 case MenuName.Test:
@@ -84,10 +98,25 @@ namespace LawnCareSim.Input
         }
         #endregion
 
-        #region General
+        #region Menus
+        private void ConfirmPerformed(InputAction.CallbackContext obj)
+        {
+            MenuConfirmEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ConfirmCanceled(InputAction.CallbackContext obj)
+        {
+            MenuConfirmCanceledEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void DeclinePerformed(InputAction.CallbackContext obj)
+        {
+            MenuDeclineEvent?.Invoke(this, EventArgs.Empty);
+        }
+
         private void Escape(InputAction.CallbackContext obj)
         {
-            EscapeEvent?.Invoke(this, EventArgs.Empty);
+            MenuEscapeEvent?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 

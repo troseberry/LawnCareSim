@@ -8432,6 +8432,7 @@ MonoBehaviour:
   _budgetText: {fileID: 1836437415}
   _difficultyStars: {fileID: 19205883}
   _gearList: {fileID: 1241389173}
+  _selectionGroup: {fileID: 1119276456}
   _selectProgressRadialAnimator: {fileID: 2024612729}
 --- !u!1 &1875449834
 GameObject:

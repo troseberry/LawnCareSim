@@ -2,34 +2,6 @@
     "name": "InputMaster",
     "maps": [
         {
-            "name": "General",
-            "id": "afd89ce6-bfd2-4660-80e0-f16e34034d6d",
-            "actions": [
-                {
-                    "name": "Escape",
-                    "type": "Button",
-                    "id": "b51e18fd-76b8-4221-9429-ab29dc2fb7d4",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "d326e343-ee0d-44c6-ac05-fd67dd087964",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Escape",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
             "name": "MouseKeyboard",
             "id": "e8f6460f-2315-4548-954c-a16b2d0e77fc",
             "actions": [
@@ -55,24 +27,6 @@
                     "name": "TabMenu",
                     "type": "Button",
                     "id": "7bfc08a2-bb9b-4b54-8e13-f2ed404ce9cf",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Confirm",
-                    "type": "Button",
-                    "id": "d010d255-71b1-4442-86a8-be4a250226bf",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Decline",
-                    "type": "Button",
-                    "id": "b253836a-1803-4912-a1ec-1a82d5d94810",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -156,10 +110,45 @@
                     "action": "TabMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menus",
+            "id": "bf35dd28-f344-48f6-b3fc-71faf3a549ff",
+            "actions": [
+                {
+                    "name": "Confirm",
+                    "type": "Button",
+                    "id": "bbbf47c0-87c4-4e6e-8302-0f56bb8db6a9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
+                    "name": "Decline",
+                    "type": "Button",
+                    "id": "244bd7e2-2b8f-415f-9798-4ad31dd1c872",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "7358de1f-48c7-459f-8152-3f38b142cc1b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
                     "name": "",
-                    "id": "1cb5b39a-4a7f-4dd6-83bb-5e86cb6ad8b2",
+                    "id": "ffd054c1-479f-4186-81ce-1385b5d2f875",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
@@ -170,12 +159,101 @@
                 },
                 {
                     "name": "",
-                    "id": "4b9ac6e9-7191-4590-b306-79859d7e2102",
+                    "id": "3df9163a-d461-4f28-ba5d-554515c7105c",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Decline",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8c9c2bbf-acae-452d-8f9b-adac92d01bce",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Escape",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Mower",
+            "id": "86d69537-3a2d-4419-beab-bafd685b98c4",
+            "actions": [
+                {
+                    "name": "AdjustCutHeight",
+                    "type": "Button",
+                    "id": "4957e0ee-f2d2-4dfa-b731-44094048dfdc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "17bf6679-68ba-4ff0-a214-061ae1be5d06",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCutHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "9ccab9f4-0554-4107-b620-899c699e6617",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCutHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "ad167d49-00bc-4746-b131-d017c01dd227",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCutHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Debug",
+            "id": "f32d5e10-cd98-4465-b82e-ed8fb3c9e857",
+            "actions": [
+                {
+                    "name": "DebugMenu",
+                    "type": "Button",
+                    "id": "f0b1fa6c-ccc3-42e9-882e-6d08b74e0c1b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "cdeb1392-8f6a-4fab-a7d8-74f0a39381eb",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -694,84 +772,6 @@
                     "action": "TrackedDeviceOrientation",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Debug",
-            "id": "f32d5e10-cd98-4465-b82e-ed8fb3c9e857",
-            "actions": [
-                {
-                    "name": "DebugMenu",
-                    "type": "Button",
-                    "id": "f0b1fa6c-ccc3-42e9-882e-6d08b74e0c1b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "cdeb1392-8f6a-4fab-a7d8-74f0a39381eb",
-                    "path": "<Keyboard>/backquote",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DebugMenu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Mower",
-            "id": "86d69537-3a2d-4419-beab-bafd685b98c4",
-            "actions": [
-                {
-                    "name": "AdjustCutHeight",
-                    "type": "Button",
-                    "id": "4957e0ee-f2d2-4dfa-b731-44094048dfdc",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "1D Axis",
-                    "id": "17bf6679-68ba-4ff0-a214-061ae1be5d06",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "AdjustCutHeight",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "9ccab9f4-0554-4107-b620-899c699e6617",
-                    "path": "<Keyboard>/z",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "AdjustCutHeight",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "ad167d49-00bc-4746-b131-d017c01dd227",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "AdjustCutHeight",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 }
             ]
         }

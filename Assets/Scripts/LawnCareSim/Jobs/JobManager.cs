@@ -28,13 +28,9 @@ namespace LawnCareSim.Jobs
         public Job ActiveJob
         {
             get => _activeJob;
-            private set
+            internal set
             {
                 _activeJob = value;
-                if (value != null)
-                {
-                    EventRelayer.Instance.OnActiveJobSetEvent(_activeJob);
-                }
             }
         }
 
@@ -111,7 +107,7 @@ namespace LawnCareSim.Jobs
                 }
 
                 _jobsMap[job.Guid] = modJob;
-                EventRelayer.Instance.OnJobTasksCreatedEvent(modJob);
+                EventRelayer.Instance.OnJobTasksCreated(modJob);
 
                 foreach(var task in modJob.Tasks)
                 {

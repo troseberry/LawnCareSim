@@ -17,7 +17,7 @@ namespace LawnCareSim.Jobs
 
         private void Start()
         {
-            EventRelayer.Instance.ActiveJobSetEvent += ActiveJobSetEventListener;
+            EventRelayer.Instance.ActiveJobStartedEvent += ActiveJobStartedEventListener;
             EventRelayer.Instance.ActiveJobProgressedEvent += ActiveJobProgressedEventListener;
 
             UIHelpers.SetUpUIElement(transform, ref _totalProgressPercentageText, "TotalProgressPercentageText");
@@ -26,7 +26,7 @@ namespace LawnCareSim.Jobs
             _totalProgressRadialAnimator.Play("ProgressRadial", -1, 0);
         }
 
-        private void ActiveJobSetEventListener(object sender, Job job)
+        private void ActiveJobStartedEventListener(object sender, Job job)
         {
             _totalProgressRadialAnimator.Play("ProgressRadial", -1, job.TotalProgress);
             _totalProgressPercentageText.text = $"{Mathf.FloorToInt(job.TotalProgress * 100)}";

@@ -126,7 +126,7 @@ namespace LawnCareSim.Events
         public event EventHandler<Job> JobCreatedEvent;
         public event EventHandler<Job> LawnGeneratedEvent;
         public event EventHandler<Job> JobTasksCreatedEvent;
-        public event EventHandler<Job> ActiveJobSetEvent;
+        public event EventHandler<Job> ActiveJobStartedEvent;
         public event EventHandler<Job> ActiveJobProgressedEvent;
         public event EventHandler<JobTask> ActiveJobTaskProgressedEvent;
 
@@ -140,14 +140,14 @@ namespace LawnCareSim.Events
             LawnGeneratedEvent?.Invoke(this, job);
         }
 
-        public void OnJobTasksCreatedEvent(Job job)
+        public void OnJobTasksCreated(Job job)
         {
             JobTasksCreatedEvent?.Invoke(this, job);
         }
 
-        public void OnActiveJobSetEvent(Job job)
+        public void OnActiveJobStarted(Job job)
         {
-            ActiveJobSetEvent?.Invoke(this, job);
+            ActiveJobStartedEvent?.Invoke(this, job);
         }
 
         public void OnActiveJobProgressed(Job job)

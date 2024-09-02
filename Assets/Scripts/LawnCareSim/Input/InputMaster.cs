@@ -24,34 +24,6 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
     ""name"": ""InputMaster"",
     ""maps"": [
         {
-            ""name"": ""General"",
-            ""id"": ""afd89ce6-bfd2-4660-80e0-f16e34034d6d"",
-            ""actions"": [
-                {
-                    ""name"": ""Escape"",
-                    ""type"": ""Button"",
-                    ""id"": ""b51e18fd-76b8-4221-9429-ab29dc2fb7d4"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""d326e343-ee0d-44c6-ac05-fd67dd087964"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Escape"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
             ""name"": ""MouseKeyboard"",
             ""id"": ""e8f6460f-2315-4548-954c-a16b2d0e77fc"",
             ""actions"": [
@@ -77,24 +49,6 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
                     ""name"": ""TabMenu"",
                     ""type"": ""Button"",
                     ""id"": ""7bfc08a2-bb9b-4b54-8e13-f2ed404ce9cf"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Confirm"",
-                    ""type"": ""Button"",
-                    ""id"": ""d010d255-71b1-4442-86a8-be4a250226bf"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Decline"",
-                    ""type"": ""Button"",
-                    ""id"": ""b253836a-1803-4912-a1ec-1a82d5d94810"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -178,10 +132,45 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
                     ""action"": ""TabMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Menus"",
+            ""id"": ""bf35dd28-f344-48f6-b3fc-71faf3a549ff"",
+            ""actions"": [
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""bbbf47c0-87c4-4e6e-8302-0f56bb8db6a9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Decline"",
+                    ""type"": ""Button"",
+                    ""id"": ""244bd7e2-2b8f-415f-9798-4ad31dd1c872"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""7358de1f-48c7-459f-8152-3f38b142cc1b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
                     ""name"": """",
-                    ""id"": ""1cb5b39a-4a7f-4dd6-83bb-5e86cb6ad8b2"",
+                    ""id"": ""ffd054c1-479f-4186-81ce-1385b5d2f875"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -192,12 +181,101 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4b9ac6e9-7191-4590-b306-79859d7e2102"",
+                    ""id"": ""3df9163a-d461-4f28-ba5d-554515c7105c"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Decline"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c9c2bbf-acae-452d-8f9b-adac92d01bce"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Mower"",
+            ""id"": ""86d69537-3a2d-4419-beab-bafd685b98c4"",
+            ""actions"": [
+                {
+                    ""name"": ""AdjustCutHeight"",
+                    ""type"": ""Button"",
+                    ""id"": ""4957e0ee-f2d2-4dfa-b731-44094048dfdc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""17bf6679-68ba-4ff0-a214-061ae1be5d06"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdjustCutHeight"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""9ccab9f4-0554-4107-b620-899c699e6617"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdjustCutHeight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""ad167d49-00bc-4746-b131-d017c01dd227"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdjustCutHeight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
+        },
+        {
+            ""name"": ""Debug"",
+            ""id"": ""f32d5e10-cd98-4465-b82e-ed8fb3c9e857"",
+            ""actions"": [
+                {
+                    ""name"": ""DebugMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""f0b1fa6c-ccc3-42e9-882e-6d08b74e0c1b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""cdeb1392-8f6a-4fab-a7d8-74f0a39381eb"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -718,98 +796,26 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
-        },
-        {
-            ""name"": ""Debug"",
-            ""id"": ""f32d5e10-cd98-4465-b82e-ed8fb3c9e857"",
-            ""actions"": [
-                {
-                    ""name"": ""DebugMenu"",
-                    ""type"": ""Button"",
-                    ""id"": ""f0b1fa6c-ccc3-42e9-882e-6d08b74e0c1b"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""cdeb1392-8f6a-4fab-a7d8-74f0a39381eb"",
-                    ""path"": ""<Keyboard>/backquote"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DebugMenu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Mower"",
-            ""id"": ""86d69537-3a2d-4419-beab-bafd685b98c4"",
-            ""actions"": [
-                {
-                    ""name"": ""AdjustCutHeight"",
-                    ""type"": ""Button"",
-                    ""id"": ""4957e0ee-f2d2-4dfa-b731-44094048dfdc"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""17bf6679-68ba-4ff0-a214-061ae1be5d06"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""AdjustCutHeight"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""9ccab9f4-0554-4107-b620-899c699e6617"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""AdjustCutHeight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""ad167d49-00bc-4746-b131-d017c01dd227"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""AdjustCutHeight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                }
-            ]
         }
     ],
     ""controlSchemes"": []
 }");
-        // General
-        m_General = asset.FindActionMap("General", throwIfNotFound: true);
-        m_General_Escape = m_General.FindAction("Escape", throwIfNotFound: true);
         // MouseKeyboard
         m_MouseKeyboard = asset.FindActionMap("MouseKeyboard", throwIfNotFound: true);
         m_MouseKeyboard_Move = m_MouseKeyboard.FindAction("Move", throwIfNotFound: true);
         m_MouseKeyboard_Interact = m_MouseKeyboard.FindAction("Interact", throwIfNotFound: true);
         m_MouseKeyboard_TabMenu = m_MouseKeyboard.FindAction("TabMenu", throwIfNotFound: true);
-        m_MouseKeyboard_Confirm = m_MouseKeyboard.FindAction("Confirm", throwIfNotFound: true);
-        m_MouseKeyboard_Decline = m_MouseKeyboard.FindAction("Decline", throwIfNotFound: true);
+        // Menus
+        m_Menus = asset.FindActionMap("Menus", throwIfNotFound: true);
+        m_Menus_Confirm = m_Menus.FindAction("Confirm", throwIfNotFound: true);
+        m_Menus_Decline = m_Menus.FindAction("Decline", throwIfNotFound: true);
+        m_Menus_Escape = m_Menus.FindAction("Escape", throwIfNotFound: true);
+        // Mower
+        m_Mower = asset.FindActionMap("Mower", throwIfNotFound: true);
+        m_Mower_AdjustCutHeight = m_Mower.FindAction("AdjustCutHeight", throwIfNotFound: true);
+        // Debug
+        m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
+        m_Debug_DebugMenu = m_Debug.FindAction("DebugMenu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -822,12 +828,6 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
-        // Debug
-        m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
-        m_Debug_DebugMenu = m_Debug.FindAction("DebugMenu", throwIfNotFound: true);
-        // Mower
-        m_Mower = asset.FindActionMap("Mower", throwIfNotFound: true);
-        m_Mower_AdjustCutHeight = m_Mower.FindAction("AdjustCutHeight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -886,60 +886,12 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // General
-    private readonly InputActionMap m_General;
-    private List<IGeneralActions> m_GeneralActionsCallbackInterfaces = new List<IGeneralActions>();
-    private readonly InputAction m_General_Escape;
-    public struct GeneralActions
-    {
-        private @InputMaster m_Wrapper;
-        public GeneralActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Escape => m_Wrapper.m_General_Escape;
-        public InputActionMap Get() { return m_Wrapper.m_General; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(GeneralActions set) { return set.Get(); }
-        public void AddCallbacks(IGeneralActions instance)
-        {
-            if (instance == null || m_Wrapper.m_GeneralActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_GeneralActionsCallbackInterfaces.Add(instance);
-            @Escape.started += instance.OnEscape;
-            @Escape.performed += instance.OnEscape;
-            @Escape.canceled += instance.OnEscape;
-        }
-
-        private void UnregisterCallbacks(IGeneralActions instance)
-        {
-            @Escape.started -= instance.OnEscape;
-            @Escape.performed -= instance.OnEscape;
-            @Escape.canceled -= instance.OnEscape;
-        }
-
-        public void RemoveCallbacks(IGeneralActions instance)
-        {
-            if (m_Wrapper.m_GeneralActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IGeneralActions instance)
-        {
-            foreach (var item in m_Wrapper.m_GeneralActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_GeneralActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public GeneralActions @General => new GeneralActions(this);
-
     // MouseKeyboard
     private readonly InputActionMap m_MouseKeyboard;
     private List<IMouseKeyboardActions> m_MouseKeyboardActionsCallbackInterfaces = new List<IMouseKeyboardActions>();
     private readonly InputAction m_MouseKeyboard_Move;
     private readonly InputAction m_MouseKeyboard_Interact;
     private readonly InputAction m_MouseKeyboard_TabMenu;
-    private readonly InputAction m_MouseKeyboard_Confirm;
-    private readonly InputAction m_MouseKeyboard_Decline;
     public struct MouseKeyboardActions
     {
         private @InputMaster m_Wrapper;
@@ -947,8 +899,6 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_MouseKeyboard_Move;
         public InputAction @Interact => m_Wrapper.m_MouseKeyboard_Interact;
         public InputAction @TabMenu => m_Wrapper.m_MouseKeyboard_TabMenu;
-        public InputAction @Confirm => m_Wrapper.m_MouseKeyboard_Confirm;
-        public InputAction @Decline => m_Wrapper.m_MouseKeyboard_Decline;
         public InputActionMap Get() { return m_Wrapper.m_MouseKeyboard; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -967,12 +917,6 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
             @TabMenu.started += instance.OnTabMenu;
             @TabMenu.performed += instance.OnTabMenu;
             @TabMenu.canceled += instance.OnTabMenu;
-            @Confirm.started += instance.OnConfirm;
-            @Confirm.performed += instance.OnConfirm;
-            @Confirm.canceled += instance.OnConfirm;
-            @Decline.started += instance.OnDecline;
-            @Decline.performed += instance.OnDecline;
-            @Decline.canceled += instance.OnDecline;
         }
 
         private void UnregisterCallbacks(IMouseKeyboardActions instance)
@@ -986,12 +930,6 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
             @TabMenu.started -= instance.OnTabMenu;
             @TabMenu.performed -= instance.OnTabMenu;
             @TabMenu.canceled -= instance.OnTabMenu;
-            @Confirm.started -= instance.OnConfirm;
-            @Confirm.performed -= instance.OnConfirm;
-            @Confirm.canceled -= instance.OnConfirm;
-            @Decline.started -= instance.OnDecline;
-            @Decline.performed -= instance.OnDecline;
-            @Decline.canceled -= instance.OnDecline;
         }
 
         public void RemoveCallbacks(IMouseKeyboardActions instance)
@@ -1009,6 +947,160 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         }
     }
     public MouseKeyboardActions @MouseKeyboard => new MouseKeyboardActions(this);
+
+    // Menus
+    private readonly InputActionMap m_Menus;
+    private List<IMenusActions> m_MenusActionsCallbackInterfaces = new List<IMenusActions>();
+    private readonly InputAction m_Menus_Confirm;
+    private readonly InputAction m_Menus_Decline;
+    private readonly InputAction m_Menus_Escape;
+    public struct MenusActions
+    {
+        private @InputMaster m_Wrapper;
+        public MenusActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Confirm => m_Wrapper.m_Menus_Confirm;
+        public InputAction @Decline => m_Wrapper.m_Menus_Decline;
+        public InputAction @Escape => m_Wrapper.m_Menus_Escape;
+        public InputActionMap Get() { return m_Wrapper.m_Menus; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenusActions set) { return set.Get(); }
+        public void AddCallbacks(IMenusActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MenusActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MenusActionsCallbackInterfaces.Add(instance);
+            @Confirm.started += instance.OnConfirm;
+            @Confirm.performed += instance.OnConfirm;
+            @Confirm.canceled += instance.OnConfirm;
+            @Decline.started += instance.OnDecline;
+            @Decline.performed += instance.OnDecline;
+            @Decline.canceled += instance.OnDecline;
+            @Escape.started += instance.OnEscape;
+            @Escape.performed += instance.OnEscape;
+            @Escape.canceled += instance.OnEscape;
+        }
+
+        private void UnregisterCallbacks(IMenusActions instance)
+        {
+            @Confirm.started -= instance.OnConfirm;
+            @Confirm.performed -= instance.OnConfirm;
+            @Confirm.canceled -= instance.OnConfirm;
+            @Decline.started -= instance.OnDecline;
+            @Decline.performed -= instance.OnDecline;
+            @Decline.canceled -= instance.OnDecline;
+            @Escape.started -= instance.OnEscape;
+            @Escape.performed -= instance.OnEscape;
+            @Escape.canceled -= instance.OnEscape;
+        }
+
+        public void RemoveCallbacks(IMenusActions instance)
+        {
+            if (m_Wrapper.m_MenusActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMenusActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MenusActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MenusActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MenusActions @Menus => new MenusActions(this);
+
+    // Mower
+    private readonly InputActionMap m_Mower;
+    private List<IMowerActions> m_MowerActionsCallbackInterfaces = new List<IMowerActions>();
+    private readonly InputAction m_Mower_AdjustCutHeight;
+    public struct MowerActions
+    {
+        private @InputMaster m_Wrapper;
+        public MowerActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
+        public InputAction @AdjustCutHeight => m_Wrapper.m_Mower_AdjustCutHeight;
+        public InputActionMap Get() { return m_Wrapper.m_Mower; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MowerActions set) { return set.Get(); }
+        public void AddCallbacks(IMowerActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MowerActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MowerActionsCallbackInterfaces.Add(instance);
+            @AdjustCutHeight.started += instance.OnAdjustCutHeight;
+            @AdjustCutHeight.performed += instance.OnAdjustCutHeight;
+            @AdjustCutHeight.canceled += instance.OnAdjustCutHeight;
+        }
+
+        private void UnregisterCallbacks(IMowerActions instance)
+        {
+            @AdjustCutHeight.started -= instance.OnAdjustCutHeight;
+            @AdjustCutHeight.performed -= instance.OnAdjustCutHeight;
+            @AdjustCutHeight.canceled -= instance.OnAdjustCutHeight;
+        }
+
+        public void RemoveCallbacks(IMowerActions instance)
+        {
+            if (m_Wrapper.m_MowerActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMowerActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MowerActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MowerActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MowerActions @Mower => new MowerActions(this);
+
+    // Debug
+    private readonly InputActionMap m_Debug;
+    private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
+    private readonly InputAction m_Debug_DebugMenu;
+    public struct DebugActions
+    {
+        private @InputMaster m_Wrapper;
+        public DebugActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
+        public InputAction @DebugMenu => m_Wrapper.m_Debug_DebugMenu;
+        public InputActionMap Get() { return m_Wrapper.m_Debug; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DebugActions set) { return set.Get(); }
+        public void AddCallbacks(IDebugActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DebugActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Add(instance);
+            @DebugMenu.started += instance.OnDebugMenu;
+            @DebugMenu.performed += instance.OnDebugMenu;
+            @DebugMenu.canceled += instance.OnDebugMenu;
+        }
+
+        private void UnregisterCallbacks(IDebugActions instance)
+        {
+            @DebugMenu.started -= instance.OnDebugMenu;
+            @DebugMenu.performed -= instance.OnDebugMenu;
+            @DebugMenu.canceled -= instance.OnDebugMenu;
+        }
+
+        public void RemoveCallbacks(IDebugActions instance)
+        {
+            if (m_Wrapper.m_DebugActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IDebugActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DebugActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public DebugActions @Debug => new DebugActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -1127,109 +1219,25 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
-
-    // Debug
-    private readonly InputActionMap m_Debug;
-    private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
-    private readonly InputAction m_Debug_DebugMenu;
-    public struct DebugActions
-    {
-        private @InputMaster m_Wrapper;
-        public DebugActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
-        public InputAction @DebugMenu => m_Wrapper.m_Debug_DebugMenu;
-        public InputActionMap Get() { return m_Wrapper.m_Debug; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(DebugActions set) { return set.Get(); }
-        public void AddCallbacks(IDebugActions instance)
-        {
-            if (instance == null || m_Wrapper.m_DebugActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_DebugActionsCallbackInterfaces.Add(instance);
-            @DebugMenu.started += instance.OnDebugMenu;
-            @DebugMenu.performed += instance.OnDebugMenu;
-            @DebugMenu.canceled += instance.OnDebugMenu;
-        }
-
-        private void UnregisterCallbacks(IDebugActions instance)
-        {
-            @DebugMenu.started -= instance.OnDebugMenu;
-            @DebugMenu.performed -= instance.OnDebugMenu;
-            @DebugMenu.canceled -= instance.OnDebugMenu;
-        }
-
-        public void RemoveCallbacks(IDebugActions instance)
-        {
-            if (m_Wrapper.m_DebugActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IDebugActions instance)
-        {
-            foreach (var item in m_Wrapper.m_DebugActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_DebugActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public DebugActions @Debug => new DebugActions(this);
-
-    // Mower
-    private readonly InputActionMap m_Mower;
-    private List<IMowerActions> m_MowerActionsCallbackInterfaces = new List<IMowerActions>();
-    private readonly InputAction m_Mower_AdjustCutHeight;
-    public struct MowerActions
-    {
-        private @InputMaster m_Wrapper;
-        public MowerActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
-        public InputAction @AdjustCutHeight => m_Wrapper.m_Mower_AdjustCutHeight;
-        public InputActionMap Get() { return m_Wrapper.m_Mower; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(MowerActions set) { return set.Get(); }
-        public void AddCallbacks(IMowerActions instance)
-        {
-            if (instance == null || m_Wrapper.m_MowerActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_MowerActionsCallbackInterfaces.Add(instance);
-            @AdjustCutHeight.started += instance.OnAdjustCutHeight;
-            @AdjustCutHeight.performed += instance.OnAdjustCutHeight;
-            @AdjustCutHeight.canceled += instance.OnAdjustCutHeight;
-        }
-
-        private void UnregisterCallbacks(IMowerActions instance)
-        {
-            @AdjustCutHeight.started -= instance.OnAdjustCutHeight;
-            @AdjustCutHeight.performed -= instance.OnAdjustCutHeight;
-            @AdjustCutHeight.canceled -= instance.OnAdjustCutHeight;
-        }
-
-        public void RemoveCallbacks(IMowerActions instance)
-        {
-            if (m_Wrapper.m_MowerActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IMowerActions instance)
-        {
-            foreach (var item in m_Wrapper.m_MowerActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_MowerActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public MowerActions @Mower => new MowerActions(this);
-    public interface IGeneralActions
-    {
-        void OnEscape(InputAction.CallbackContext context);
-    }
     public interface IMouseKeyboardActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnTabMenu(InputAction.CallbackContext context);
+    }
+    public interface IMenusActions
+    {
         void OnConfirm(InputAction.CallbackContext context);
         void OnDecline(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
+    }
+    public interface IMowerActions
+    {
+        void OnAdjustCutHeight(InputAction.CallbackContext context);
+    }
+    public interface IDebugActions
+    {
+        void OnDebugMenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1243,13 +1251,5 @@ public partial class @InputMaster: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
-    }
-    public interface IDebugActions
-    {
-        void OnDebugMenu(InputAction.CallbackContext context);
-    }
-    public interface IMowerActions
-    {
-        void OnAdjustCutHeight(InputAction.CallbackContext context);
     }
 }
