@@ -1,10 +1,9 @@
 ﻿using Core.Utility;
 using LawnCareSim.Events;
-using LawnCareSim.Interaction;
 using TMPro;
 using UnityEngine;
 
-namespace LawnCareSim.UI
+namespace LawnCareSim.Interaction
 {
     public class InteractionHUD : MonoBehaviour
     {

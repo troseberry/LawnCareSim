@@ -7,6 +7,13 @@
 
         Tab,
         WorkTruck,
-        JobBoard
+        JobBoard,
+
+    }
+
+    public enum HUDName
+    {
+        Invalid = 0,
+        ActiveJob
     }
 }

@@ -1,7 +1,13 @@
-﻿namespace Core.UI
+﻿using UnityEngine;
+
+namespace Core.UI
 {
-    public interface IHud
+    public interface IHUD
     {
         void InitializeHud();
+
+        void Show();
+
+        void Hide();
     }
 }

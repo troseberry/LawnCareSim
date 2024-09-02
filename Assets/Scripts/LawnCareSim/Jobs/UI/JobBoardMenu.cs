@@ -43,35 +43,6 @@ namespace LawnCareSim.Jobs
             Instance = this;
         }
 
-        /*
-        private void Update()
-        {
-            if (_hoveredEntry != null)
-            {
-                if (UnityEngine.Input.GetMouseButton(0))
-                {
-                    _selectProgress = Mathf.Clamp(_selectProgress + SELECTION_RATE, 0f, 1.0f);
-                }
-                else
-                {
-                   _selectProgress = Mathf.Clamp(_selectProgress - SELECTION_RATE, 0f, 1.0f);
-                }
-
-                _selectProgressRadialAnimator.Play("ProgressRadial", -1, _selectProgress);
-            }
-            else
-            {
-                if (_selectProgress > 0)
-                {
-
-                    _selectProgressRadialAnimator.Play("ProgressRadial", -1, _selectProgress);
-                    _selectProgress = 0;
-                }
-            }
-            
-        }
-        */
-
         public override void InitializeMenuView()
         {
             base.InitializeMenuView();
@@ -88,8 +59,6 @@ namespace LawnCareSim.Jobs
             InputController.Instance.MenuConfirmEvent += MenuConfirmEventListener;
             InputController.Instance.MenuConfirmCanceledEvent += MenuConfirmCanceledEventListener;
         }
-
-        
 
         #region Event Listener
         private void DayChangedEventListener(object sender, Time.Day args)
@@ -178,6 +147,11 @@ namespace LawnCareSim.Jobs
         #region Details
         private void ShowDetailsPanel()
         {
+            if (_hoveredEntry.HasBeenRipped)
+            {
+                return;
+            }
+
             Job hoveredJob = (Job)_hoveredEntry.BackingData;
 
             for (int i = 0; i < _difficultyStars.childCount; i++)
@@ -223,6 +197,12 @@ namespace LawnCareSim.Jobs
         private void HandleSelectionUI(bool start)
         {
             if (JobManager.Instance.ActiveJob != null)
+            {
+                return;
+            }
+
+            // Prevent messing with animator if its not visible
+            if (!_selectionGroup.gameObject.activeInHierarchy)
             {
                 return;
             }
@@ -277,8 +257,8 @@ namespace LawnCareSim.Jobs
 
         private void OnJobSelected()
         {
-            Debug.Log($"[JobBoardMenu][OnJobSelected]");
             _selectionGroup.gameObject.SetActive(false);
+            _hoveredEntry.OnSelected();
             JobManager.Instance.ActiveJob = (Job)_hoveredEntry.BackingData;
         }
     }

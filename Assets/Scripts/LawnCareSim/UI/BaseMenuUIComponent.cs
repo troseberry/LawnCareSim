@@ -65,5 +65,10 @@ namespace LawnCareSim.UI
         {
 
         }
+
+        public virtual void OnSelected()
+        {
+
+        }
     }
 }

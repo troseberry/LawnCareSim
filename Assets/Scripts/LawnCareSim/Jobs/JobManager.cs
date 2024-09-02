@@ -31,6 +31,17 @@ namespace LawnCareSim.Jobs
             internal set
             {
                 _activeJob = value;
+
+                if (_activeJob != null)
+                {
+                    MenuManager.Instance.ShowHUDElement(HUDName.ActiveJob);
+                    EventRelayer.Instance.OnActiveJobSelected(_activeJob);
+                }
+                else
+                {
+                    MenuManager.Instance.HideHUDElement(HUDName.ActiveJob);
+                    EventRelayer.Instance.OnActiveJobCleared();
+                }
             }
         }
 
@@ -204,6 +215,11 @@ namespace LawnCareSim.Jobs
             if (GUI.Button(new Rect(mainRect.x + 200, mainRect.y + 25, 150, 150), "Job Board"))
             {
                 MenuManager.Instance.ToggleMenu(MenuName.JobBoard);
+            }
+
+            if (GUI.Button(new Rect(mainRect.x + 380, mainRect.y + 25, 150, 150), "Clear Active"))
+            {
+                ActiveJob = null;
             }
         }
         #endregion

@@ -2,6 +2,7 @@
 using Core.UI;
 using LawnCareSim.Events;
 using LawnCareSim.Input;
+using LawnCareSim.Jobs;
 using System;
 using System.Collections.Generic;
 using System.Timers;
@@ -15,6 +16,7 @@ namespace LawnCareSim.UI
 
         #region Private Vars
         private Dictionary<MenuName, IMenu> _menusMap;
+        private Dictionary<HUDName, IHUD> _hudMap;
 
         private bool _gameMenusDisabled;
 
@@ -49,6 +51,7 @@ namespace LawnCareSim.UI
             _interactEventWaitTimer.Elapsed += OnEventWaitTimerElapsed;
 
             PopulateMenuMap();
+            PopulateHUDMap();
         }
         #endregion
 
@@ -236,17 +239,40 @@ namespace LawnCareSim.UI
         }
         #endregion
 
+        #region HUD Elements
+        public bool ShowHUDElement(HUDName name)
+        {
+            if (!_hudMap.TryGetValue(name, out var hud))
+            {
+                return false;
+            }
+
+            hud.Show();
+            return true;
+        }
+
+        public bool HideHUDElement(HUDName name)
+        {
+            if (!_hudMap.TryGetValue(name, out var hud))
+            {
+                return false;
+            }
+
+            hud.Hide();
+            return true;
+        }
+        #endregion
+
         #region Helpers
         private void PopulateMenuMap()
         {
             _menusMap = new Dictionary<MenuName, IMenu>();
 
             var menus = Enum.GetValues(typeof(MenuName));
-            foreach (var val in menus)
+            foreach (MenuName name in menus)
             {
-                var menu = (MenuName)val;
                 IMenu toAdd = null;
-                switch (menu)
+                switch (name)
                 {
                     case MenuName.WorkTruck:
                         toAdd = Gear.WorkTruckMenu.Instance;
@@ -261,7 +287,32 @@ namespace LawnCareSim.UI
                 if (toAdd != null)
                 {
                     toAdd.InitializeMenuView();
-                    _menusMap.Add(menu, toAdd);
+                    _menusMap.Add(name, toAdd);
+                }
+            }
+        }
+
+        private void PopulateHUDMap()
+        {
+            _hudMap = new Dictionary<HUDName, IHUD>();
+
+            var huds = Enum.GetValues(typeof(HUDName));
+            foreach(HUDName name in huds)
+            {
+                IHUD toAdd = null;
+                switch(name)
+                {
+                    case HUDName.ActiveJob:
+                        toAdd = ActiveJobHUD.Instance;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (toAdd != null)
+                {
+                    toAdd.InitializeHud();
+                    _hudMap.Add(name, toAdd);
                 }
             }
         }
