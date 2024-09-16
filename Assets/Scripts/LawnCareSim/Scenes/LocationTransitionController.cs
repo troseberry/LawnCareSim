@@ -1,4 +1,5 @@
 ﻿using LawnCareSim.Events;
+using LawnCareSim.Player;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,6 +34,11 @@ namespace LawnCareSim.Scenes
             StartCoroutine(Transition(fromRoom, toRoom));
         }
 
+        internal void TransitionBetweenScenes(SceneName fromScene, SceneName toScene)
+        {
+            StartCoroutine(Transition(fromScene, toScene));
+        }
+
         private IEnumerator Transition(RoomLocation fromRoom, RoomLocation toRoom)
         {
             EventRelayer.Instance.OnDisablePlayerControl(true);
@@ -48,6 +54,32 @@ namespace LawnCareSim.Scenes
             yield return new WaitForSecondsRealtime(0.1f);
 
             EventRelayer.Instance.OnMovePlayer(fromRoom.TransitionDestination);
+
+            yield return new WaitForSecondsRealtime(0.1f);
+
+            EventRelayer.Instance.OnDisablePlayerControl(false);
+        }
+
+        private IEnumerator Transition(SceneName fromScene, SceneName toScene)
+        {
+            EventRelayer.Instance.OnDisablePlayerControl(true);
+
+            yield return new WaitForSecondsRealtime(0.1f);
+
+            yield return SceneManager.LoadSceneAsync((int)toScene, LoadSceneMode.Additive);
+
+            Scene loadedScene = SceneManager.GetSceneByBuildIndex((int)toScene);
+
+            SceneManager.MoveGameObjectToScene(PlayerRef.Instance.gameObject, loadedScene);
+
+            // To-Do: better way to do this other than GameObject.Find? Scripts for spawn locations so I can get quick references
+            var spawn = GameObject.Find("PlayerSpawn");
+            if (spawn != null)
+            {
+                EventRelayer.Instance.OnMovePlayer(spawn.transform);
+            }
+
+            SceneManager.UnloadSceneAsync((int)fromScene);
 
             yield return new WaitForSecondsRealtime(0.1f);
 

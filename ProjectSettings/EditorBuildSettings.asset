@@ -6,6 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/GameFlow.unity
+    guid: 427fdcc02652ebe47abddb89867edb3d
+  - enabled: 1
+    path: Assets/Scenes/UI.unity
+    guid: dce057564f36cb74a9f7511542a32154
+  - enabled: 1
+    path: Assets/Scenes/Camera.unity
+    guid: 3dcc56427192eb7498ddcf01a41a204f
+  - enabled: 1
     path: Assets/Scenes/Work.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Interior.unity
+    guid: 298bca86fe2f49a42bb2f13ff179e68a
   m_configObjects: {}
