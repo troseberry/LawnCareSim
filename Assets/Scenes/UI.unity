@@ -10397,7 +10397,7 @@ GameObject:
   - component: {fileID: 1837675444}
   - component: {fileID: 1837675447}
   m_Layer: 5
-  m_Name: JobBoard
+  m_Name: JobBoardMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

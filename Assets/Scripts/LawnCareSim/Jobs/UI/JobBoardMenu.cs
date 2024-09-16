@@ -105,6 +105,7 @@ namespace LawnCareSim.Jobs
             foreach(Transform child in _jobsList)
             {
                 var uiComp = child.GetComponent<PotentialJobUIComponent>();
+                uiComp.Initialize();
                 uiComp.AddEventListener(EventTriggerType.PointerEnter, (data) =>
                 {
                     _hoveredEntry = uiComp;
