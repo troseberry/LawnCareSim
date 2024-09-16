@@ -8,13 +8,8 @@ namespace LawnCareSim.Scenes
 {
     public class InteriorDoor : BaseInteractable
     {
-        [SerializeField] private Transform _destination;
-        [SerializeField] private RoomName _startRoom;
-        [SerializeField] private RoomName _destRoom;
-
-        internal Transform Destination => _destination;
-        internal RoomName StartRoom => _startRoom;
-        internal RoomName DestinationRoom => _destRoom;
+        [SerializeField] private RoomLocation _fromRoom;
+        [SerializeField] private RoomLocation _toRoom;
 
         public override string Prompt => "Enter";
 
@@ -22,7 +17,7 @@ namespace LawnCareSim.Scenes
         {
             base.Interact();
 
-            LocationTransitionController.Instance.TransitionBetweenInteriors(this);
+            LocationTransitionController.Instance.TransitionBetweenInteriors(_fromRoom, _toRoom);
             ForceExit();
         }
     }

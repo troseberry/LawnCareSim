@@ -1,6 +1,7 @@
 ﻿using LawnCareSim.Events;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace LawnCareSim.Scenes
 {
@@ -17,51 +18,40 @@ namespace LawnCareSim.Scenes
     {
         internal static LocationTransitionController Instance;
 
-        [SerializeField] private GameObject _officeRoom;
-        [SerializeField] private GameObject _garageRoom;
-
         private void Awake()
         {
             Instance = this;
         }
 
-        internal void TransitionBetweenInteriors(InteriorDoor door)
+        //on scene load, get Location objects in scene
+        // Is this needed? If all doors just make the call to transition this controller
+        // shouldn't need any references
+
+
+        internal void TransitionBetweenInteriors(RoomLocation fromRoom, RoomLocation toRoom)
         {
-            StartCoroutine(Transition(door));
+            StartCoroutine(Transition(fromRoom, toRoom));
         }
 
-        private IEnumerator Transition(InteriorDoor door)
+        private IEnumerator Transition(RoomLocation fromRoom, RoomLocation toRoom)
         {
             EventRelayer.Instance.OnDisablePlayerControl(true);
 
             yield return new WaitForSecondsRealtime(0.1f);
 
-            GetRoomFromName(door.DestinationRoom).SetActive(true);
+            toRoom.RoomGroup.SetActive(true);
 
             yield return new WaitForSecondsRealtime(0.1f);
 
-            GetRoomFromName(door.StartRoom).SetActive(false);
+            fromRoom.RoomGroup.SetActive(false);
 
             yield return new WaitForSecondsRealtime(0.1f);
 
-            EventRelayer.Instance.OnMovePlayer(door.Destination);
+            EventRelayer.Instance.OnMovePlayer(fromRoom.TransitionDestination);
 
             yield return new WaitForSecondsRealtime(0.1f);
 
             EventRelayer.Instance.OnDisablePlayerControl(false);
-        }
-
-        private GameObject GetRoomFromName(RoomName name)
-        {
-            switch(name)
-            {
-                case RoomName.Office:
-                    return _officeRoom;
-                case RoomName.Garage:
-                    return _garageRoom;
-            }
-
-            return null;
         }
     }
 }
