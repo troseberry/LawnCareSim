@@ -71,6 +71,7 @@ namespace LawnCareSim.Scenes
             Scene loadedScene = SceneManager.GetSceneByBuildIndex((int)toScene);
 
             SceneManager.MoveGameObjectToScene(PlayerRef.Instance.gameObject, loadedScene);
+            SceneManager.SetActiveScene(loadedScene);
 
             // To-Do: better way to do this other than GameObject.Find? Scripts for spawn locations so I can get quick references
             var spawn = GameObject.Find("PlayerSpawn");

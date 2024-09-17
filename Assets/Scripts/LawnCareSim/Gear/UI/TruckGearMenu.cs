@@ -7,7 +7,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 namespace LawnCareSim.Gear
 {
-    public class WorkTruckMenu : BaseMenu
+    public class TruckGearMenu : BaseMenu
     {
         #region Constants
         private const int MAX_STATS_COUNT = 4;
@@ -24,7 +24,7 @@ namespace LawnCareSim.Gear
         #endregion
 
         #region Private Vars
-        private OnJobGearManager _gearManager;
+        private GearManager _gearManager;
 
         private List<GearInfo> _gearData = new List<GearInfo>();
         private List<(GameObject, GearUIComponent)> _gearList = new List<(GameObject, GearUIComponent)>();
@@ -34,7 +34,7 @@ namespace LawnCareSim.Gear
         private List<GameObject> _statObjects = new List<GameObject>();
         #endregion
 
-        public static WorkTruckMenu Instance;
+        public static TruckGearMenu Instance;
 
         private void Awake()
         {
@@ -45,7 +45,7 @@ namespace LawnCareSim.Gear
         {
             base.InitializeMenuView();
 
-            _gearManager = OnJobGearManager.Instance;
+            _gearManager = GearManager.Instance;
 
             _detailsGroup.SetActive(false);
         }
@@ -60,6 +60,7 @@ namespace LawnCareSim.Gear
 
         private void CreateGearSlots()
         {
+            Debug.Log("CreateGearSlots");
             _gearData = _gearManager.GetAllGearInfo();
 
             for (int i = 0; i < _gearData.Count; i++)
@@ -74,6 +75,7 @@ namespace LawnCareSim.Gear
                     var gearGO = Instantiate(_gearComponentPrefab, _gearGroup);
 
                     var gearComp = gearGO.GetComponent<GearUIComponent>();
+                    gearComp.Initialize();
                     gearComp.BackingData = _gearData[i];
 
                     var entry = (gearGO, gearComp);

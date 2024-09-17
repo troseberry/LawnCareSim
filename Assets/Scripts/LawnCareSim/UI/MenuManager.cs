@@ -275,7 +275,7 @@ namespace LawnCareSim.UI
                 switch (name)
                 {
                     case MenuName.WorkTruck:
-                        toAdd = Gear.WorkTruckMenu.Instance;
+                        toAdd = Gear.TruckGearMenu.Instance;
                         break;
                     case MenuName.JobBoard:
                         toAdd = Jobs.JobBoardMenu.Instance;

@@ -3,18 +3,20 @@ using LawnCareSim.Data;
 using LawnCareSim.Events;
 using LawnCareSim.Input;
 using LawnCareSim.Player;
+using LawnCareSim.Scenes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.SceneManagement;
 
 namespace LawnCareSim.Gear
 {
     // TO-DO: maybe rename to TruckGearManager. Anticipating there will be another manager for gear when not on a job. Like in the garage
     // Or keep all gear stuff to one class
-    public partial class OnJobGearManager : MonoBehaviour
+    public partial class GearManager : MonoBehaviour
     {
-        public static OnJobGearManager Instance;
+        public static GearManager Instance;
 
         private Transform _gearSpawn;
         private Transform _workTruckPlayerSpawn;
@@ -34,13 +36,25 @@ namespace LawnCareSim.Gear
             _inputController = InputController.Instance;
             _inputController.InteractEvent += InteractEventListener;
 
-            _gearSpawn = GameObject.Find("GearSpawn").transform;
-            _workTruckPlayerSpawn = GameObject.Find("WorkTruckPlayerSpawn").transform;
+            SceneManager.sceneLoaded += OnSceneLoaded;
 
             CreateDebugGearList();
         }
 
+
+
         #region Event Listeners
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            switch ((SceneName)scene.buildIndex)
+            {
+                case SceneName.Work:
+                    _gearSpawn = GameObject.Find("GearSpawn").transform;
+                    _workTruckPlayerSpawn = GameObject.Find("WorkTruckPlayerSpawn").transform;
+                    break;
+            }
+        }
+
         private void InteractEventListener(object sender, EventArgs args)
         {
             if (_equippedGear.IGear != null)
@@ -51,7 +65,7 @@ namespace LawnCareSim.Gear
         #endregion
     }
 
-    public partial class OnJobGearManager : IManager
+    public partial class GearManager : IManager
     {
         private InputController _inputController;
 
@@ -178,7 +192,7 @@ namespace LawnCareSim.Gear
     }
 
     #region Debug
-    public partial class OnJobGearManager
+    public partial class GearManager
     {
         public bool ShowDebugGUI;
 

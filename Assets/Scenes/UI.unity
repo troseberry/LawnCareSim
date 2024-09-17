@@ -8238,7 +8238,7 @@ GameObject:
   - component: {fileID: 1363756062}
   - component: {fileID: 1363756066}
   m_Layer: 5
-  m_Name: WorkTruckMenu
+  m_Name: TruckGearMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,11 +10,6 @@ namespace LawnCareSim.UI
     {
         private EventTrigger _eventTrigger;
 
-        private void Start()
-        {
-            Initialize();
-        }
-
         public virtual object BackingData { get; set; }
 
         public virtual void Initialize()
